@@ -23,8 +23,8 @@ contract BattleOfChains is Ownable {
         return _random % 2;
     }
 
-    function generateSlot(uint256 _random, uint256 _type) public pure returns (uint96 _slot) {
-        return uint96((_random << 3) | _type);
+    function generateSlot(uint256 _random, uint256 _type, uint32 _joinedChainId) public pure returns (uint96 _slot) {
+        return uint96((_random << 35) | uint256(_joinedChainId) << 3 | _type);
     }
 
     function presetTokenURI(uint256 _type) public pure returns (string memory) {
@@ -34,13 +34,24 @@ contract BattleOfChains is Ownable {
         revert("Type not supported");
     }
 
+    function typeFromTokenId(uint256 _tokenId) public pure returns(uint256) {
+        return (_tokenId >> 160) & 0x7;
+    }
+
+    function chainIdFromTokenId(uint256 _tokenId) public pure returns(uint256) {
+        return (_tokenId >> 163) & 0xFFFFFFFF;
+    }
+
+    function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
+        return address(uint160(_tokenId));
+    }
 
     // Doubts: add a _to to mint, so you can mint for other people too?
 
-    function mint(uint256 _joinedChainId) public returns (uint256 _tokenId) {
+    function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
         uint256 _random = generateRandom();
         uint256 _type = generateType(_random);
-        uint96 _slot = generateSlot(_random, _type);
+        uint96 _slot = generateSlot(_random, _type, _joinedChainId);
         return collectionContract.mintWithExternalURI(msg.sender, _slot, presetTokenURI(_type));
     }
 
