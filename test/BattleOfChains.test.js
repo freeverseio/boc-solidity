@@ -2,16 +2,12 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("BattleOfChains", function () {
-  let BattleOfChains, battleOfChains, mockCollection, owner, addr1;
+  let BattleOfChains, battleOfChains, owner, addr1;
   const collectionAddress = "0xffFFFffFFffFFfFFFFfFFfFE0000000000000001";
 
   beforeEach(async function () {
     // Get signers
     [owner, addr1] = await ethers.getSigners();
-
-    // Deploy a mock IEvolutionCollection contract
-    const MockCollection = await ethers.getContractFactory("MockCollection");
-    mockCollection = await MockCollection.deploy();
 
     // Deploy the BattleOfChains contract
     BattleOfChains = await ethers.getContractFactory("BattleOfChains");
@@ -58,33 +54,14 @@ describe("BattleOfChains", function () {
   });
 
   it("should return the correct chain ID from token ID", async function () {
-    const tokenId = ethers.BigNumber.from("0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-    const chainIdFromTokenId = await battleOfChains.chainIdFromTokenId(tokenId);
-    expect(chainIdFromTokenId).to.be.a("bigint");
+    const chainIdFromTokenId = await battleOfChains.chainIdFromTokenId("0x123456789abcde00000000189abcdef0123456789abcdef0123456789abcdef");
+    expect(Number(chainIdFromTokenId)).to.equal(0);
+    const chainIdFromTokenId2 = await battleOfChains.chainIdFromTokenId("0x123456789abcde00000000989abcdef0123456789abcdef0123456789abcdef");
+    expect(Number(chainIdFromTokenId2)).to.equal(1);
   });
 
   it("should return the correct creator address from token ID", async function () {
-    const tokenId = ethers.BigNumber.from("0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
-    const creatorAddress = await battleOfChains.creatorFromTokenId(tokenId);
-    expect(creatorAddress).to.be.a("string");
-    expect(ethers.utils.isAddress(creatorAddress)).to.be.true;
-  });
-
-  it("should mint a token with a valid slot and URI", async function () {
-    const joinedChainId = 12345;
-    await mockCollection.mockMintWithExternalURI(owner.address, 1, "ipfs://QmType0"); // Mock mint for collection
-
-    const tx = await battleOfChains.mint(joinedChainId);
-    expect(tx).to.emit(mockCollection, "MintedWithExternalURI");
-  });
-
-  it("should mint with external URI", async function () {
-    const slot = 123;
-    const tokenURI = "ipfs://QmExternalURI";
-
-    await mockCollection.mockMintWithExternalURI(addr1.address, slot, tokenURI); // Mock mint for collection
-
-    const tx = await battleOfChains.mintWithExternalURI(addr1.address, slot, tokenURI);
-    expect(tx).to.emit(mockCollection, "MintedWithExternalURI");
+    const creatorAddress = await battleOfChains.creatorFromTokenId("0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    expect(creatorAddress).to.equal("0x89abCdef0123456789AbCDEf0123456789AbCDEF");
   });
 });

@@ -7,6 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @title Battle of Chains
 /// @author LAOS Team and Freeverse
 
+// TODOS:
+// add events
+// consider a mintTo, so you can mint for other people too
+
 contract BattleOfChains is Ownable {
 
     address public constant COLLECTION_ADDRESS = 0xfFfffFFFffFFFffffffFfFfe0000000000000001;
@@ -45,8 +49,6 @@ contract BattleOfChains is Ownable {
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
         return address(uint160(_tokenId));
     }
-
-    // Doubts: add a _to to mint, so you can mint for other people too?
 
     function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
         uint256 _random = generateRandom();
