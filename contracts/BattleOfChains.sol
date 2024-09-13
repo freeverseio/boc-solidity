@@ -9,8 +9,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BattleOfChains is Ownable {
 
-    address public collectionAddress = 0xfFfffFFFffFFFffffffFfFfe0000000000000001;
-    IEvolutionCollection private collectionContract = IEvolutionCollection(collectionAddress);
+    address public constant COLLECTION_ADDRESS = 0xfFfffFFFffFFFffffffFfFfe0000000000000001;
+    IEvolutionCollection private collectionContract = IEvolutionCollection(COLLECTION_ADDRESS);
 
     constructor() Ownable(msg.sender) {}
 
