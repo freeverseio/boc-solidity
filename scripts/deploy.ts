@@ -1,19 +1,17 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const tokenName = "FutureLAOS";
-  const tokenSymbol = "FLAOS";
+  const collectionAddress = "0xfFfffFFFffFFFffffffFfFfe0000000000000001";
 
   const accounts = await ethers.getSigners();
   console.log("Deploying contracts with the account:", accounts[0].address);
 
   const ContractFactory = await ethers.getContractFactory(
-    "Balances",
+    "BattleOfChains",
   );
 
   const instance = await ContractFactory.deploy(
-    tokenName,
-    tokenSymbol,
+    collectionAddress,
   );
   await instance.waitForDeployment();
 
