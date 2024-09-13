@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 
 describe("BattleOfChains", function () {
   let BattleOfChains, battleOfChains, owner, addr1;
-  const collectionAddress = "0xffFFFffFFffFFfFFFFfFFfFE0000000000000001";
+  const collectionAddress = "0xfFfffFFFffFFFffffffFfFfe0000000000000001";
 
   beforeEach(async function () {
     // Get signers
@@ -11,7 +11,7 @@ describe("BattleOfChains", function () {
 
     // Deploy the BattleOfChains contract
     BattleOfChains = await ethers.getContractFactory("BattleOfChains");
-    battleOfChains = await BattleOfChains.deploy();
+    battleOfChains = await BattleOfChains.deploy(collectionAddress);
   });
 
   it("should generate a random number from the previous block", async function () {

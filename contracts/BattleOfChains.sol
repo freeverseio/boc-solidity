@@ -13,10 +13,19 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BattleOfChains is Ownable {
 
-    address public constant COLLECTION_ADDRESS = 0xfFfffFFFffFFFffffffFfFfe0000000000000001;
-    IEvolutionCollection private collectionContract = IEvolutionCollection(COLLECTION_ADDRESS);
+    address public laosCollectionAddress;
+    IEvolutionCollection private collectionContract = IEvolutionCollection(laosCollectionAddress);
 
-    constructor() Ownable(msg.sender) {}
+    constructor(address _laosCollectionAddress) Ownable(msg.sender) {
+        laosCollectionAddress = _laosCollectionAddress;
+    }
+
+    function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
+        uint256 _random = generateRandom();
+        uint256 _type = generateType(_random);
+        uint96 _slot = generateSlot(_random, _type, _joinedChainId);
+        return collectionContract.mintWithExternalURI(msg.sender, _slot, presetTokenURI(_type));
+    }
 
     function generateRandom() public view returns(uint256) {
         return uint256(blockhash(block.number - 1));
@@ -49,20 +58,4 @@ contract BattleOfChains is Ownable {
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
         return address(uint160(_tokenId));
     }
-
-    function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
-        uint256 _random = generateRandom();
-        uint256 _type = generateType(_random);
-        uint96 _slot = generateSlot(_random, _type, _joinedChainId);
-        return collectionContract.mintWithExternalURI(msg.sender, _slot, presetTokenURI(_type));
-    }
-
-    function mintWithExternalURI(
-        address _to,
-        uint96 _slot,
-        string calldata _tokenURI
-    ) external returns (uint256) {
-        return collectionContract.mintWithExternalURI(_to, _slot, _tokenURI);
-    }
-
 }
