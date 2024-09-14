@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // TODOS:
 // add events
-// consider a mintTo, so you can mint for other people too
 
 contract BattleOfChains is Ownable {
 
@@ -20,11 +19,19 @@ contract BattleOfChains is Ownable {
         laosCollectionAddress = _laosCollectionAddress;
     }
 
+    function mintTo(address _recipient, uint32 _joinedChainId) public returns (uint256 _tokenId) {
+        return _mintTo(_recipient, _joinedChainId);
+    }
+
     function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
+        return _mintTo(msg.sender, _joinedChainId);
+    }
+
+    function _mintTo(address _recipient, uint32 _joinedChainId) private returns (uint256 _tokenId) {
         uint256 _random = generateRandom();
         uint256 _type = generateType(_random);
         uint96 _slot = generateSlot(_random, _type, _joinedChainId);
-        return collectionContract.mintWithExternalURI(msg.sender, _slot, presetTokenURI(_type));
+        return collectionContract.mintWithExternalURI(_recipient, _slot, presetTokenURI(_type));
     }
 
     function generateRandom() public view returns(uint256) {
