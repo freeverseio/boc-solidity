@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /// @author LAOS Team and Freeverse
 
 // TODOS:
-// add events
+// use latest compiler in header
 
 contract BattleOfChains is Ownable {
 
@@ -84,5 +84,11 @@ contract BattleOfChains is Ownable {
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
         return address(uint160(_tokenId));
     }
-    
+
+    function coordinatesOf(address user) public pure returns (uint256 x, uint256 y) {
+        uint160 user160 = uint160(user);
+
+        x = uint256(user160 >> 80);
+        y = uint256(user160 & ((1 << 80) - 1));
+    }
 }

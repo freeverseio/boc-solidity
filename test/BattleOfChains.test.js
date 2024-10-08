@@ -78,5 +78,16 @@ describe("BattleOfChains", function () {
     await expect(battleOfChains.joinChainIfNeeded(homechain = 3))
       .to.not.be.reverted;
   });
+
+  it("getCoordinates works as expected", async function () {
+    let coordinates;
+    coordinates = await battleOfChains.coordinatesOf('0x1111111111111111111100000000000000000000');
+    expect(coordinates.x.toString()).to.equal('80595054640975278313745');
+    expect(coordinates.y.toString()).to.equal('0');
+
+    coordinates = await battleOfChains.coordinatesOf('0x0000000000000000000011111111111111111111');
+    expect(coordinates.y.toString()).to.equal('80595054640975278313745');
+    expect(coordinates.x.toString()).to.equal('0');
+  });
 });
 
