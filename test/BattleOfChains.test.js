@@ -49,13 +49,20 @@ describe("BattleOfChains", function () {
 
 
   it("cannot mint with null homechain", async function () {
-    await expect(battleOfChains.multichainMint(homechain = 0, type = 3))
+    await expect(battleOfChains["multichainMint(uint32,uint32)"](homechain = 0, type = 3))
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
   });
 
-  it("cannot mint in chain different from previously joined chain", async function () {
+  it("cannot mint using homechain different from previously joined chain", async function () {
     await battleOfChains.joinChain(homechain = 1);
-    await expect(battleOfChains.multichainMint(newhomechain = 2, type = 3))
+    await expect(battleOfChains["multichainMint(uint32,uint32)"](newhomechain = 2, type = 3))
+      .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
+      .withArgs(owner.address, homechain);
+  });
+
+  it("can mint using same homechain as previously joined chain", async function () {
+    await battleOfChains.joinChain(homechain = 1);
+    await expect(battleOfChains["multichainMint(uint32,uint32)"](homechain, type = 3))
       .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
       .withArgs(owner.address, homechain);
   });

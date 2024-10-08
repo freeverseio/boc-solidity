@@ -18,6 +18,7 @@ contract BattleOfChains is Ownable {
 
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
+    error UserHasNotJoinedChainYet(address _user);
 
     event MultichainMint(
         uint256 _tokenId,
@@ -51,11 +52,20 @@ contract BattleOfChains is Ownable {
         if (homeChainOfUser[msg.sender] != 0 && homeChainOfUser[msg.sender] != _homeChain) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
 
         _joinChain(_homeChain);
+        return _multichainMint(_homeChain, _type);
+    }
+
+    function multichainMint(uint32 _type) public returns (uint256 _tokenId) {
+        uint32 _homeChain = homeChainOfUser[msg.sender];
+        if (_homeChain == 0) revert UserHasNotJoinedChainYet(msg.sender);
+        return _multichainMint(_homeChain, _type);
+    }
+
+    function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
         _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
         emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
         return _tokenId;
-        
     }
 
     function typeTokenURI(uint256 _type) public pure returns (string memory) {
