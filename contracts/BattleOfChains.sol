@@ -15,51 +15,28 @@ contract BattleOfChains is Ownable {
     address public laosCollectionAddress;
     IEvolutionCollection private collectionContract = IEvolutionCollection(laosCollectionAddress);
 
+    event MultichainMint(
+        uint256 _tokenId,
+        address indexed _creator, 
+        uint32 indexed _type,
+        uint32 indexed _homeChain
+    );
+
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         laosCollectionAddress = _laosCollectionAddress;
     }
 
-    function mintTo(address _recipient, uint32 _joinedChainId) public returns (uint256 _tokenId) {
-        return _mintTo(_recipient, _joinedChainId);
+    function mint(uint32 _homeChain, uint32 _type) public returns (uint256 _tokenId) {
+        uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
+        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
+        emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
+        return _tokenId;
     }
 
-    function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
-        return _mintTo(msg.sender, _joinedChainId);
-    }
-
-    function _mintTo(address _recipient, uint32 _joinedChainId) private returns (uint256 _tokenId) {
-        uint256 _random = generateRandom();
-        uint256 _type = generateType(_random);
-        uint96 _slot = generateSlot(_random, _type, _joinedChainId);
-        return collectionContract.mintWithExternalURI(_recipient, _slot, presetTokenURI(_type));
-    }
-
-    function generateRandom() public view returns(uint256) {
-        return uint256(blockhash(block.number - 1));
-    }
-
-    // currently only the 1st two types are supported
-    function generateType(uint256 _random) public pure returns(uint256) {
-        return _random % 2;
-    }
-
-    function generateSlot(uint256 _random, uint256 _type, uint32 _joinedChainId) public pure returns (uint96 _slot) {
-        return uint96((_random << 35) | uint256(_joinedChainId) << 3 | _type);
-    }
-
-    function presetTokenURI(uint256 _type) public pure returns (string memory) {
+    function typeTokenURI(uint256 _type) public pure returns (string memory) {
         if (_type == 0) return "ipfs://QmType0";
         if (_type == 1) return "ipfs://QmType1";
-        // Revert with a custom error message if type is not supported
-        revert("Type not supported");
-    }
-
-    function typeFromTokenId(uint256 _tokenId) public pure returns(uint256) {
-        return (_tokenId >> 160) & 0x7;
-    }
-
-    function chainIdFromTokenId(uint256 _tokenId) public pure returns(uint256) {
-        return (_tokenId >> 163) & 0xFFFFFFFF;
+        return "ipfs://Qmdefault";
     }
 
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
