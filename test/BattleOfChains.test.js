@@ -114,7 +114,27 @@ describe("BattleOfChains", function () {
       .to.emit(battleOfChains, "Attack")
       .withArgs(x, y, owner.address, targetChain, strategy);
   });
-  
+
+  it("attackOnBehalfOf (x,y) emits expected event", async function () {
+    const delegatedUser = addr1.address;
+    await expect(
+      battleOfChains.connect(owner)["attackOnBehalfOf(uint256,uint256,uint32,uint32,address)"](x = 5, y = 6, targetChain = 3, strategy = 52, delegatedUser)
+    )
+      .to.emit(battleOfChains, "AttackOnBehalfOf")
+      .withArgs(x, y, owner.address, delegatedUser, targetChain, strategy);
+  });
+
+  it("attackOnBehalfOf address emits expected event", async function () {
+    const user = '0x1111111111111111111100000000000000000000';
+    const x = '80595054640975278313745';
+    const y = '0';
+    const delegatedUser = addr1.address;
+    await expect(
+      battleOfChains.connect(owner)["attackOnBehalfOf(address,uint32,uint32,address)"](user, targetChain = 3, strategy = 52, delegatedUser)
+    )
+      .to.emit(battleOfChains, "AttackOnBehalfOf")
+      .withArgs(x, y, owner.address, delegatedUser, targetChain, strategy);
+  });
 
 });
 
