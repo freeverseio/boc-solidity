@@ -37,16 +37,8 @@ contract BattleOfChains is Ownable {
     event Attack(
         uint256 _x,
         uint256 _y,
-        address _attacker,
-        uint32 indexed _targetChain,
-        uint32 _strategy
-    );
-
-    event AttackOnBehalfOf(
-        uint256 _x,
-        uint256 _y,
         address _operator,
-        address _delegateUser,
+        address _attacker,
         uint32 indexed _targetChain,
         uint32 _strategy
     );
@@ -112,21 +104,25 @@ contract BattleOfChains is Ownable {
     }
 
     function attack(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) public {
-        emit Attack(_x, _y, msg.sender, _targetChain, _strategy);
+        _attack(_x, _y, msg.sender, _targetChain, _strategy);
     }
 
     function attack(address targetUser, uint32 _targetChain, uint32 _strategy) public {
         (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        emit Attack(_x, _y, msg.sender, _targetChain, _strategy);
+        _attack(_x, _y, msg.sender, _targetChain, _strategy);
     }
 
-    function attackOnBehalfOf(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _delegatedUser) public {
-        emit AttackOnBehalfOf(_x, _y, msg.sender, _delegatedUser, _targetChain, _strategy);
+    function attackOnBehalfOf(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+        _attack(_x, _y, _attacker, _targetChain, _strategy);
     }
 
-    function attackOnBehalfOf(address targetUser, uint32 _targetChain, uint32 _strategy, address _delegatedUser) public {
+    function attackOnBehalfOf(address targetUser, uint32 _targetChain, uint32 _strategy, address _attacker) public {
         (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        emit AttackOnBehalfOf(_x, _y, msg.sender, _delegatedUser, _targetChain, _strategy);
+        _attack(_x, _y, _attacker, _targetChain, _strategy);
+    }
+
+    function _attack(uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
+        emit Attack(_x, _y, msg.sender, _attacker, _targetChain, _strategy);
     }
 
 }
