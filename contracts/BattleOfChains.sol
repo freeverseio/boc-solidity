@@ -36,17 +36,21 @@ contract BattleOfChains is Ownable {
     }
 
     function joinChain(uint32 _homeChain) public {
+        _joinChain(_homeChain);
+    }
+
+    function _joinChain(uint32 _homeChain) private {
         if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOfUser[msg.sender] != 0) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
         homeChainOfUser[msg.sender] = _homeChain;
         emit JoinedChain(msg.sender, _homeChain);
     }
 
-
     function multichainMint(uint32 _homeChain, uint32 _type) public returns (uint256 _tokenId) {
         if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOfUser[msg.sender] != 0 && homeChainOfUser[msg.sender] != _homeChain) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
 
+        _joinChain(_homeChain);
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
         _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
         emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
