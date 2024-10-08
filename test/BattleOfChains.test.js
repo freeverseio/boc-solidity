@@ -98,10 +98,10 @@ describe("BattleOfChains", function () {
 
   it("attack (x,y) emits expected event", async function () {
     await expect(
-      battleOfChains.connect(owner)["attack(uint32,uint256,uint256,uint32)"](targetChain = 3, x = 5, y = 6, strategy = 52)
+      battleOfChains.connect(owner)["attack(uint256,uint256,uint32,uint32)"](x = 5, y = 6, targetChain = 3, strategy = 52)
     )
       .to.emit(battleOfChains, "Attack")
-      .withArgs(x, y, targetChain, strategy);
+      .withArgs(x, y, owner.address, targetChain, strategy);
   });
   
   it("attack address emits expected event", async function () {
@@ -109,10 +109,10 @@ describe("BattleOfChains", function () {
     const x = '80595054640975278313745';
     const y = '0';
     await expect(
-      battleOfChains.connect(owner)["attack(uint32,address,uint32)"](targetChain = 3, user, strategy = 52)
+      battleOfChains.connect(owner)["attack(address,uint32,uint32)"](user, targetChain = 3, strategy = 52)
     )
       .to.emit(battleOfChains, "Attack")
-      .withArgs(x, y, targetChain, strategy);
+      .withArgs(x, y, owner.address, targetChain, strategy);
   });
   
 

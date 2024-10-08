@@ -36,6 +36,7 @@ contract BattleOfChains is Ownable {
     event Attack(
         uint256 _x,
         uint256 _y,
+        address _attacker,
         uint32 indexed _targetChain,
         uint32 _strategy
     );
@@ -100,13 +101,13 @@ contract BattleOfChains is Ownable {
         _y = uint256(user160 & ((1 << 80) - 1));
     }
 
-    function attack(uint32 _targetChain, uint256 _x, uint256 _y, uint32 _strategy) public {
-        emit Attack(_x, _y, _targetChain, _strategy);
+    function attack(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) public {
+        emit Attack(_x, _y, msg.sender, _targetChain, _strategy);
     }
 
-    function attack(uint32 _targetChain, address targetUser, uint32 _strategy) public {
+    function attack(address targetUser, uint32 _targetChain, uint32 _strategy) public {
         (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        emit Attack(_x, _y, _targetChain, _strategy);
+        emit Attack(_x, _y, msg.sender, _targetChain, _strategy);
     }
 
 }
