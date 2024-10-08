@@ -60,6 +60,12 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address, homechain);
   });
 
+  it("cannot mint without specifying homeChain nor joining previously", async function () {
+    await expect(battleOfChains["multichainMint(uint32)"](type = 3))
+      .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
+      .withArgs(owner.address);
+  });
+
   it("joinChainIfNeeded fails if previously joined a different chain", async function () {
     await battleOfChains.joinChain(homechain = 1);
     await expect(battleOfChains.joinChainIfNeeded(newhomechain = 2))
@@ -82,12 +88,22 @@ describe("BattleOfChains", function () {
   it("getCoordinates works as expected", async function () {
     let coordinates;
     coordinates = await battleOfChains.coordinatesOf('0x1111111111111111111100000000000000000000');
-    expect(coordinates.x.toString()).to.equal('80595054640975278313745');
-    expect(coordinates.y.toString()).to.equal('0');
+    expect(coordinates._x.toString()).to.equal('80595054640975278313745');
+    expect(coordinates._y.toString()).to.equal('0');
 
     coordinates = await battleOfChains.coordinatesOf('0x0000000000000000000011111111111111111111');
-    expect(coordinates.y.toString()).to.equal('80595054640975278313745');
-    expect(coordinates.x.toString()).to.equal('0');
+    expect(coordinates._y.toString()).to.equal('80595054640975278313745');
+    expect(coordinates._x.toString()).to.equal('0');
   });
+
+  it("attack emits expected event", async function () {
+    await expect(
+      battleOfChains.connect(owner)["attack(uint32,uint256,uint256,uint32)"](targetChain = 3, x = 5, y = 6, strategy = 52)
+    )
+      .to.emit(battleOfChains, "Attack")
+      .withArgs(x, y, targetChain, strategy);
+  });
+  
+
 });
 

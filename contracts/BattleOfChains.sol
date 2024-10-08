@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // TODOS:
 // use latest compiler in header
+// separate interface
 
 contract BattleOfChains is Ownable {
 
@@ -30,6 +31,13 @@ contract BattleOfChains is Ownable {
     event JoinedChain(
         address indexed _user, 
         uint32 indexed _homeChain
+    );
+
+    event Attack(
+        uint256 _x,
+        uint256 _y,
+        uint32 indexed _targetChain,
+        uint32 _strategy
     );
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
@@ -85,10 +93,20 @@ contract BattleOfChains is Ownable {
         return address(uint160(_tokenId));
     }
 
-    function coordinatesOf(address user) public pure returns (uint256 x, uint256 y) {
-        uint160 user160 = uint160(user);
+    function coordinatesOf(address _user) public pure returns (uint256 _x, uint256 _y) {
+        uint160 user160 = uint160(_user);
 
-        x = uint256(user160 >> 80);
-        y = uint256(user160 & ((1 << 80) - 1));
+        _x = uint256(user160 >> 80);
+        _y = uint256(user160 & ((1 << 80) - 1));
     }
+
+    function attack(uint32 _targetChain, uint256 _x, uint256 _y, uint32 _strategy) public {
+        emit Attack(_x, _y, _targetChain, _strategy);
+    }
+
+    function attack(uint32 _targetChain, address targetUser, uint32 _strategy) public {
+        (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
+        emit Attack(_x, _y, _targetChain, _strategy);
+    }
+
 }
