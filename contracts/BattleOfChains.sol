@@ -13,7 +13,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract BattleOfChains is Ownable {
 
     address public laosCollectionAddress;
-    IEvolutionCollection private collectionContract = IEvolutionCollection(laosCollectionAddress);
+    IEvolutionCollection private immutable collectionContract = IEvolutionCollection(laosCollectionAddress);
+    mapping(address user => uint32 homeChain) public homeChainOfUser;
+
+    error HomeChainMustBeGreaterThanZero();
+    error UserAlreadyJoinedChain(address _user, uint32 _chain);
 
     event MultichainMint(
         uint256 _tokenId,
@@ -26,11 +30,22 @@ contract BattleOfChains is Ownable {
         laosCollectionAddress = _laosCollectionAddress;
     }
 
-    function mint(uint32 _homeChain, uint32 _type) public returns (uint256 _tokenId) {
+    function joinChain(uint32 _homeChain) public {
+        if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOfUser[msg.sender] != 0) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
+        homeChainOfUser[msg.sender] = _homeChain;
+    }
+
+
+    function multichainMint(uint32 _homeChain, uint32 _type) public returns (uint256 _tokenId) {
+        if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOfUser[msg.sender] != 0 && homeChainOfUser[msg.sender] != _homeChain) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
+
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
         _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
         emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
         return _tokenId;
+        
     }
 
     function typeTokenURI(uint256 _type) public pure returns (string memory) {
