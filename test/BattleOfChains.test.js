@@ -96,9 +96,20 @@ describe("BattleOfChains", function () {
     expect(coordinates._x.toString()).to.equal('0');
   });
 
-  it("attack emits expected event", async function () {
+  it("attack (x,y) emits expected event", async function () {
     await expect(
       battleOfChains.connect(owner)["attack(uint32,uint256,uint256,uint32)"](targetChain = 3, x = 5, y = 6, strategy = 52)
+    )
+      .to.emit(battleOfChains, "Attack")
+      .withArgs(x, y, targetChain, strategy);
+  });
+  
+  it("attack address emits expected event", async function () {
+    const user = '0x1111111111111111111100000000000000000000';
+    const x = '80595054640975278313745';
+    const y = '0';
+    await expect(
+      battleOfChains.connect(owner)["attack(uint32,address,uint32)"](targetChain = 3, user, strategy = 52)
     )
       .to.emit(battleOfChains, "Attack")
       .withArgs(x, y, targetChain, strategy);
