@@ -10,7 +10,7 @@ describe("BattleOfChains", function () {
     [owner, addr1] = await ethers.getSigners();
 
     // Deploy the BattleOfChains contract
-    BattleOfChains = await ethers.getContractFactory("BattleOfChains");
+    BattleOfChains = await ethers.getContractFactory("BattleOfChainsTest");
     battleOfChains = await BattleOfChains.deploy(collectionAddress);
   });
 
@@ -60,12 +60,23 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address, homechain);
   });
 
-  it("can mint using same homechain as previously joined chain", async function () {
+  it("joinChainIfNeeded fails if previously joined a different chain", async function () {
     await battleOfChains.joinChain(homechain = 1);
-    await expect(battleOfChains["multichainMint(uint32,uint32)"](homechain, type = 3))
+    await expect(battleOfChains.joinChainIfNeeded(newhomechain = 2))
       .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
       .withArgs(owner.address, homechain);
   });
 
+  it("joinChainIfNeeded succeeds if previously joined the same chain", async function () {
+    await battleOfChains.joinChain(homechain = 1);
+    await expect(battleOfChains.joinChainIfNeeded(homechain))
+      .to.not.be.reverted;
+  });
+
+  it("joinChainIfNeeded succeeds if previously did not join any chain", async function () {
+    expect(await battleOfChains.homeChainOfUser(owner)).to.equal(0);
+    await expect(battleOfChains.joinChainIfNeeded(homechain = 3))
+      .to.not.be.reverted;
+  });
 });
 
