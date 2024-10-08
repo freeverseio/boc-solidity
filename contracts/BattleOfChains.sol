@@ -35,10 +35,11 @@ contract BattleOfChains is Ownable {
     );
 
     event Attack(
+        uint256[] _tokenIds,
         uint256 _x,
         uint256 _y,
-        address _operator,
-        address _attacker,
+        address indexed _operator,
+        address indexed _attacker,
         uint32 indexed _targetChain,
         uint32 _strategy
     );
@@ -103,26 +104,26 @@ contract BattleOfChains is Ownable {
         _y = uint256(user160 & ((1 << 80) - 1));
     }
 
-    function attack(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) public {
-        _attack(_x, _y, msg.sender, _targetChain, _strategy);
+    function attack(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) public {
+        _attack(_tokenIds, _x, _y, msg.sender, _targetChain, _strategy);
     }
 
-    function attack(address targetUser, uint32 _targetChain, uint32 _strategy) public {
+    function attack(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy) public {
         (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        _attack(_x, _y, msg.sender, _targetChain, _strategy);
+        _attack(_tokenIds, _x, _y, msg.sender, _targetChain, _strategy);
     }
 
-    function attackOnBehalfOf(uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _attacker) public {
-        _attack(_x, _y, _attacker, _targetChain, _strategy);
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+        _attack(_tokenIds, _x, _y, _attacker, _targetChain, _strategy);
     }
 
-    function attackOnBehalfOf(address targetUser, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy, address _attacker) public {
         (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        _attack(_x, _y, _attacker, _targetChain, _strategy);
+        _attack(_tokenIds, _x, _y, _attacker, _targetChain, _strategy);
     }
 
-    function _attack(uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
-        emit Attack(_x, _y, msg.sender, _attacker, _targetChain, _strategy);
+    function _attack(uint256[] calldata tokenIds, uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
+        emit Attack(tokenIds, _x, _y, msg.sender, _attacker, _targetChain, _strategy);
     }
 
 }
