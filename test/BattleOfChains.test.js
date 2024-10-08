@@ -36,6 +36,12 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address, homechain);
   });
 
+  it("joining emits the expected event", async function () {
+    await expect(battleOfChains.connect(owner).joinChain(homechain = 3))
+      .to.emit(battleOfChains, "JoinedChain")
+      .withArgs(owner.address, homechain);
+  });
+
   it("user cannot join null chain", async function () {
     await expect(battleOfChains.joinChain(0))
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");

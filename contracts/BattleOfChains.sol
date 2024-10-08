@@ -21,8 +21,13 @@ contract BattleOfChains is Ownable {
 
     event MultichainMint(
         uint256 _tokenId,
-        address indexed _creator, 
+        address indexed _user, 
         uint32 indexed _type,
+        uint32 indexed _homeChain
+    );
+
+    event JoinedChain(
+        address indexed _user, 
         uint32 indexed _homeChain
     );
 
@@ -34,6 +39,7 @@ contract BattleOfChains is Ownable {
         if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOfUser[msg.sender] != 0) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
         homeChainOfUser[msg.sender] = _homeChain;
+        emit JoinedChain(msg.sender, _homeChain);
     }
 
 
