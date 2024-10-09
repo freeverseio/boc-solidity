@@ -145,10 +145,7 @@ contract BattleOfChains is Ownable {
         return _multichainMint(_homeChain, _type);
     }
 
-    ////////////////
-    // Daily Actions
-    ////////////////
-    function voteChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
+    function proposeChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
         _chainActionHash = hashChainAction(_chainAction);
         emit ChainActionProposal(msg.sender, msg.sender, _chainAction, _chainActionHash);

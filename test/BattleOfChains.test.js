@@ -339,15 +339,15 @@ describe("BattleOfChains", function () {
     )).to.be.false;
   });
 
-  it("voteChainAction fails on wrong inputs", async function () {
-    await expect(battleOfChains.voteChainAction(
+  it("proposeChainAction fails on wrong inputs", async function () {
+    await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.DEFEND,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NORTH,
       })
     ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
-    await expect(battleOfChains.voteChainAction(
+    await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: nullAddress,
@@ -356,15 +356,15 @@ describe("BattleOfChains", function () {
     ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
   });
 
-  it("voteChainAction succeeds on correct inputs", async function () {
-    await expect(battleOfChains.voteChainAction(
+  it("proposeChainAction succeeds on correct inputs", async function () {
+    await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.DEFEND,
         attackAddress: nullAddress,
         attackArea: Attack_Area.NULL,
       })
     ).not.to.be.reverted;
-    await expect(battleOfChains.voteChainAction(
+    await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: collectionAddress,
@@ -373,14 +373,14 @@ describe("BattleOfChains", function () {
     ).not.to.be.reverted;
   });
 
-  it("emits ChainActionProposal event when voteChainAction is called", async function () {
+  it("emits ChainActionProposal event when proposeChainAction is called", async function () {
     const chainAction = {
       actionType: ChainActionType.DEFEND,
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
     };
 
-    const tx = await battleOfChains.voteChainAction(chainAction);
+    const tx = await battleOfChains.proposeChainAction(chainAction);
     const actionHash = await battleOfChains.hashChainAction(chainAction);
 
     await expect(tx)
