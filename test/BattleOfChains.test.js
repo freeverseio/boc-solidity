@@ -6,12 +6,17 @@ describe("BattleOfChains", function () {
   const collectionAddress = "0xfFfffFFFffFFFffffffFfFfe0000000000000001";
 
   beforeEach(async function () {
-    // Get signers
     [owner, addr1] = await ethers.getSigners();
-
-    // Deploy the BattleOfChains contract
     BattleOfChains = await ethers.getContractFactory("BattleOfChainsTest");
     battleOfChains = await BattleOfChains.deploy(collectionAddress);
+  });
+
+  it("only URI manager cna change URIs", async function () {
+    await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+
+    await expect(battleOfChains.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
   });
 
   it("should return correct typeTokenURI for valid types", async function () {

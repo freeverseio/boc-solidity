@@ -20,11 +20,13 @@ contract BattleOfChains is Ownable {
     mapping(address user => uint32 homeChain) public homeChainOfUser;
     mapping(uint32 => string) public tokenURIs;
     string missingTypeURI;
+    address uriManager;
 
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
     error IncorrectArrayLengths();
+    error SenderIsNotURIManager();
 
     event MultichainMint(
         uint256 _tokenId,
@@ -48,18 +50,24 @@ contract BattleOfChains is Ownable {
         uint32 _strategy
     );
 
-    constructor(address _laosCollectionAddress) Ownable(msg.sender) {
-        laosCollectionAddress = _laosCollectionAddress;
+    modifier onlyURIManager {
+        if (msg.sender != uriManager) revert SenderIsNotURIManager();
+        _;
     }
 
-    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public {
+    constructor(address _laosCollectionAddress) Ownable(msg.sender) {
+        laosCollectionAddress = _laosCollectionAddress;
+        uriManager = msg.sender;
+    }
+
+    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public onlyURIManager {
         if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
         for (uint256 i = 0; i <_types.length; i++) {
             tokenURIs[_types[i]] = _tokenURIs[i];
         }
     }
 
-    function setMissingTypeURI(string calldata _tokenURI) public {
+    function setMissingTypeURI(string calldata _tokenURI) public onlyURIManager {
         missingTypeURI = _tokenURI;
     }
 
