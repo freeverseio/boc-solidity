@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity >=0.8.3;
+pragma solidity >=0.8.27;
 
 import "./IEvolutionCollection.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -20,6 +20,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // think of attacking a particular place
 // calldata vs memory in all functions
 // review != 0 in favour of just variable
+// consider need for actionHash if we don't have supportHash
 
 contract BattleOfChains is Ownable {
 
