@@ -338,5 +338,39 @@ describe("BattleOfChains", function () {
     )).to.be.false;
   });
 
+  it("voteChainAction fails on wrong inputs", async function () {
+    await expect(battleOfChains.voteChainAction(
+      {
+        actionType: ChainActionType.DEFEND,
+        attackAddress: collectionAddress,
+        attackArea: Attack_Area.NORTH,
+      })
+    ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
+    await expect(battleOfChains.voteChainAction(
+      {
+        actionType: ChainActionType.ATTACK_ADDRESS,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      })
+    ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
+  });
+
+  it("voteChainAction succeeds on correct inputs", async function () {
+    await expect(battleOfChains.voteChainAction(
+      {
+        actionType: ChainActionType.DEFEND,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      })
+    ).not.to.be.reverted;
+    await expect(battleOfChains.voteChainAction(
+      {
+        actionType: ChainActionType.ATTACK_ADDRESS,
+        attackAddress: collectionAddress,
+        attackArea: Attack_Area.NULL,
+      })
+    ).not.to.be.reverted;
+  });
+
 });
 
