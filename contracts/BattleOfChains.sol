@@ -146,9 +146,17 @@ contract BattleOfChains is Ownable {
     }
 
     function proposeChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
+        return _proposeChainAction(msg.sender, _chainAction);
+    }
+
+    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
+        return _proposeChainAction(_user, _chainAction);
+    }
+
+    function _proposeChainAction(address _user, ChainAction calldata _chainAction) private returns (bytes32 _chainActionHash) {
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
         _chainActionHash = hashChainAction(_chainAction);
-        emit ChainActionProposal(msg.sender, msg.sender, _chainAction, _chainActionHash);
+        emit ChainActionProposal(msg.sender, _user, _chainAction, _chainActionHash);
         return _chainActionHash;
     }
 

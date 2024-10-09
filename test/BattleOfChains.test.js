@@ -393,6 +393,26 @@ describe("BattleOfChains", function () {
       );
   });
 
+  it("emits ChainActionProposal event when proposeChainActionOnBehalfOf is called", async function () {
+    const chainAction = {
+      actionType: ChainActionType.DEFEND,
+      attackArea: Attack_Area.NULL,
+      attackAddress: nullAddress,
+    };
+
+    const tx = await battleOfChains.proposeChainActionOnBehalfOf(addr1.address, chainAction);
+    const actionHash = await battleOfChains.hashChainAction(chainAction);
+
+    await expect(tx)
+      .to.emit(battleOfChains, "ChainActionProposal")
+      .withArgs(
+        owner.address,
+        addr1.address,
+        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        actionHash
+      );
+  });
+
   it("should correctly hash a ChainAction struct", async function () {
     const chainAction = {
       actionType: ChainActionType.ATTACK_AREA,
