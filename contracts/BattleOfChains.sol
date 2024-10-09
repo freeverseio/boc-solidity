@@ -15,8 +15,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BattleOfChains is Ownable {
 
-    address public laosCollectionAddress;
-    IEvolutionCollection public immutable collectionContract = IEvolutionCollection(laosCollectionAddress);
+    IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOfUser;
     mapping(uint32 => string) public tokenURIs;
     string public missingTypeURI;
@@ -56,7 +55,7 @@ contract BattleOfChains is Ownable {
     }
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
-        laosCollectionAddress = _laosCollectionAddress;
+        collectionContract = IEvolutionCollection(_laosCollectionAddress);
         uriManager = msg.sender;
     }
 
@@ -119,7 +118,7 @@ contract BattleOfChains is Ownable {
         return bytes(_uri).length == 0 ? missingTypeURI : _uri;
     }
 
-    function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
+    function creatorFromTokenId(uint256 _tokenId) public pure returns(address _creator) {
         return address(uint160(_tokenId));
     }
 
@@ -151,5 +150,4 @@ contract BattleOfChains is Ownable {
     function _attack(uint256[] calldata tokenIds, uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
         emit Attack(tokenIds, _x, _y, msg.sender, _attacker, _targetChain, _strategy);
     }
-
 }

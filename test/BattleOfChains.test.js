@@ -11,7 +11,13 @@ describe("BattleOfChains", function () {
     battleOfChains = await BattleOfChains.deploy(collectionAddress);
   });
 
+  it("collection contract is correctly set on deploy", async function () {
+    expect(await battleOfChains.collectionContract()).to.equal(collectionAddress);
+  });
+
   it("only URI manager cna change URIs", async function () {
+    expect(await battleOfChains.uriManager()).to.equal(owner.address);
+
     await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
       .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
 
@@ -27,6 +33,7 @@ describe("BattleOfChains", function () {
       .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
 
     await battleOfChains.connect(owner).setURIManager(addr1.address);
+    expect(await battleOfChains.uriManager()).to.equal(addr1.address);
 
     await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
       .to.not.be.reverted;
