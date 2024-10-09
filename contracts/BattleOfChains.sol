@@ -146,19 +146,20 @@ contract BattleOfChains is Ownable {
         return hashChainAction(_chainAction);
     }
 
+    // TODO: REFACTOR ORDER FOR GAS SAVING
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
-        bool _isAttack = _chainAction.actionType == ChainActionType.DEFEND || _chainAction.actionType == ChainActionType.IMPROVE;
-        bool _attackAddressIsNull = _chainAction.attackAddress == address(0);
-        bool _attackAreaIsNull = _chainAction.attackArea != Attack_Area.NULL;
+        bool _isAttack = (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) || (_chainAction.actionType == ChainActionType.ATTACK_AREA);
+        bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
+        bool _isAttackAreaNull = _chainAction.attackArea == Attack_Area.NULL;
 
         if (!_isAttack) {
-            return _attackAddressIsNull && _attackAreaIsNull;
+            return _isAttackAddressNull && _isAttackAreaNull;
         }
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            return _attackAddressIsNull;
+            return _isAttackAddressNull;
         }
         if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return !_attackAddressIsNull && _attackAreaIsNull;
+            return !_isAttackAddressNull && _isAttackAreaNull;
         }
     }
 

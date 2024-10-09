@@ -3,8 +3,24 @@ const { ethers } = require("hardhat");
 
 describe("BattleOfChains", function () {
   let BattleOfChains, battleOfChains, owner, addr1;
-  const collectionAddress = "0xfFfffFFFffFFFffffffFfFfe0000000000000001";
+  const collectionAddress = '0xfFfffFFFffFFFffffffFfFfe0000000000000001';
+  const nullAddress = '0x0000000000000000000000000000000000000000';
+  const ChainActionType = {
+    DEFEND: 0,
+    IMPROVE: 1,
+    ATTACK_AREA: 2,
+    ATTACK_ADDRESS: 3,
+  };
+  const Attack_Area = {
+    NULL: 0,
+    NORTH: 1,
+    SOUTH: 2,
+    EAST: 3,
+    WEST: 4,
+    ALL: 5,
+  };
 
+  
   beforeEach(async function () {
     [owner, addr1] = await ethers.getSigners();
     BattleOfChains = await ethers.getContractFactory("BattleOfChainsTest");
@@ -200,6 +216,16 @@ describe("BattleOfChains", function () {
     )
       .to.emit(battleOfChains, "Attack")
       .withArgs(tokenIds, x, y, owner.address, delegatedUser, targetChain, strategy);
+  });
+
+  it("areChainActionInputsCorrect should return true for valid inputs", async function () {
+    const chainAction = {
+      actionType: ChainActionType.DEFEND,
+      attackAddress: nullAddress,
+      attackArea: Attack_Area.NULL,
+    };
+    const isOK = await battleOfChains.areChainActionInputsCorrect(chainAction);
+    expect(isOK).to.be.true;
   });
 
 });
