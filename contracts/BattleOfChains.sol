@@ -156,7 +156,7 @@ contract BattleOfChains is Ownable {
             return _isAttackAddressNull && _isAttackAreaNull;
         }
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            return _isAttackAddressNull;
+            return _isAttackAddressNull && !_isAttackAreaNull;
         }
         if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
             return !_isAttackAddressNull && _isAttackAreaNull;
