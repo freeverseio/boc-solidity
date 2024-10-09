@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { AbiCoder, keccak256 } = require("ethers");
 
 describe("BattleOfChains", function () {
   let BattleOfChains, battleOfChains, owner, addr1;
@@ -391,6 +392,26 @@ describe("BattleOfChains", function () {
         actionHash
       );
   });
+
+  it("should correctly hash a ChainAction struct", async function () {
+    const chainAction = {
+      actionType: ChainActionType.ATTACK_AREA,
+      attackArea: Attack_Area.NORTH,
+      attackAddress: nullAddress,
+    };
+
+    const expectedHash = keccak256(
+      AbiCoder.defaultAbiCoder().encode(
+        ["uint8", "uint8", "address"],
+        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress]
+      )
+    );
+
+    const chainActionHash = await battleOfChains.hashChainAction(chainAction);
+
+    expect(chainActionHash).to.equal(expectedHash);
+  });
+
 
 });
 
