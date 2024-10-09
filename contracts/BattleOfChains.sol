@@ -56,6 +56,13 @@ contract BattleOfChains is Ownable {
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
 
+    event ChainActionProposal(
+        address indexed _operator,
+        address indexed _user,
+        ChainAction _action,
+        bytes32 _actionHash
+    );
+
     event MultichainMint(
         uint256 _tokenId,
         address indexed _user, 
@@ -143,7 +150,9 @@ contract BattleOfChains is Ownable {
     ////////////////
     function voteChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
-        return hashChainAction(_chainAction);
+        _chainActionHash = hashChainAction(_chainAction);
+        emit ChainActionProposal(msg.sender, msg.sender, _chainAction, _chainActionHash);
+        return _chainActionHash;
     }
 
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
@@ -158,7 +167,7 @@ contract BattleOfChains is Ownable {
         return _isAttackAddressNull && _isAttackAreaNull;
     }
 
-    function hashChainAction(ChainAction calldata _chainAction) public returns (bytes32) {
+    function hashChainAction(ChainAction calldata _chainAction) public pure returns (bytes32) {
         return bytes32(0);
     }
 

@@ -372,5 +372,25 @@ describe("BattleOfChains", function () {
     ).not.to.be.reverted;
   });
 
+  it("emits ChainActionProposal event when voteChainAction is called", async function () {
+    const chainAction = {
+      actionType: ChainActionType.DEFEND,
+      attackArea: Attack_Area.NULL,
+      attackAddress: nullAddress,
+    };
+
+    const tx = await battleOfChains.voteChainAction(chainAction);
+    const actionHash = await battleOfChains.hashChainAction(chainAction);
+
+    await expect(tx)
+      .to.emit(battleOfChains, "ChainActionProposal")
+      .withArgs(
+        owner.address,
+        owner.address,
+        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        actionHash
+      );
+  });
+
 });
 
