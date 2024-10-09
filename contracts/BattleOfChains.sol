@@ -11,16 +11,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // use latest compiler in header
 // separate interface
 // rething naming everywhere
+// estimate costs, and balance order of params, and number of params emitted
 
 contract BattleOfChains is Ownable {
 
     address public laosCollectionAddress;
     IEvolutionCollection private immutable collectionContract = IEvolutionCollection(laosCollectionAddress);
     mapping(address user => uint32 homeChain) public homeChainOfUser;
+    mapping(uint32 => string) public tokenURIs;
+    string missingTypeURI;
 
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
+    error IncorrectArrayLengths();
 
     event MultichainMint(
         uint256 _tokenId,
@@ -46,6 +50,17 @@ contract BattleOfChains is Ownable {
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         laosCollectionAddress = _laosCollectionAddress;
+    }
+
+    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public {
+        if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
+        for (uint256 i = 0; i <_types.length; i++) {
+            tokenURIs[_types[i]] = _tokenURIs[i];
+        }
+    }
+
+    function setMissingTypeURI(string calldata _tokenURI) public {
+        missingTypeURI = _tokenURI;
     }
 
     function joinChain(uint32 _homeChain) public {
@@ -87,10 +102,9 @@ contract BattleOfChains is Ownable {
         }
     }
 
-    function typeTokenURI(uint256 _type) public pure returns (string memory) {
-        if (_type == 0) return "ipfs://QmType0";
-        if (_type == 1) return "ipfs://QmType1";
-        return "ipfs://Qmdefault";
+    function typeTokenURI(uint32 _type) public view returns (string memory _uri) {
+        _uri = tokenURIs[_type];
+        return bytes(_uri).length == 0 ? missingTypeURI : _uri;
     }
 
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {

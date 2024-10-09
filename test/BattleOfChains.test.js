@@ -15,6 +15,11 @@ describe("BattleOfChains", function () {
   });
 
   it("should return correct typeTokenURI for valid types", async function () {
+    expect(await battleOfChains.typeTokenURI(0)).to.equal("");
+    await battleOfChains.setMissingTypeURI("ipfs://Qmdefault");
+    expect(await battleOfChains.typeTokenURI(0)).to.equal("ipfs://Qmdefault");
+    expect(await battleOfChains.typeTokenURI(1)).to.equal("ipfs://Qmdefault");
+    await battleOfChains.setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
     expect(await battleOfChains.typeTokenURI(0)).to.equal("ipfs://QmType0");
     expect(await battleOfChains.typeTokenURI(1)).to.equal("ipfs://QmType1");
     expect(await battleOfChains.typeTokenURI(2)).to.equal("ipfs://Qmdefault");
