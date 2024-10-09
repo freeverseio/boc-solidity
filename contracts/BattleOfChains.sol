@@ -13,6 +13,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // rething naming everywhere
 // estimate costs, and balance order of params, and number of params emitted
 // test a uriManager contract
+// test a supportedContractManager
+// add daily chain action
+// consider using structs instead of separate variables
+// think of emitting addresses instead of (x,y)
+// think of attacking a particular place
+// calldata vs memory in all functions
+// review != 0 in favour of just variable
 
 contract BattleOfChains is Ownable {
 
@@ -20,6 +27,15 @@ contract BattleOfChains is Ownable {
         uint32 chain;
         address contractAddress;
         string observations;
+    }
+
+    enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
+    enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
+
+    struct ChainAction {
+        ChainActionType actionType;
+        Attack_Area attackArea;
+        address attackAddress;
     }
 
     IEvolutionCollection public immutable collectionContract;
@@ -37,6 +53,8 @@ contract BattleOfChains is Ownable {
     error IncorrectArrayLengths();
     error SenderIsNotURIManager();
     error SenderIsNotSupportedContractsManager();
+    error IncorrectAttackInput();
+    error AttackAddressCannotBeEmpty();
 
     event MultichainMint(
         uint256 _tokenId,
@@ -120,6 +138,36 @@ contract BattleOfChains is Ownable {
         return _multichainMint(_homeChain, _type);
     }
 
+    ////////////////
+    // Daily Actions
+    ////////////////
+    function voteChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
+        if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
+        return hashChainAction(_chainAction);
+    }
+
+    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
+        bool _isAttack = _chainAction.actionType == ChainActionType.DEFEND || _chainAction.actionType == ChainActionType.IMPROVE;
+        bool _attackAddressIsNull = _chainAction.attackAddress == address(0);
+        bool _attackAreaIsNull = _chainAction.attackArea != Attack_Area.NULL;
+
+        if (!_isAttack) {
+            return _attackAddressIsNull && _attackAreaIsNull;
+        }
+        if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
+            return _attackAddressIsNull;
+        }
+        if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
+            return !_attackAddressIsNull && _attackAreaIsNull;
+        }
+    }
+
+    function hashChainAction(ChainAction calldata _chainAction) public returns (bytes32) {
+        return bytes32(0);
+    }
+
+    //////////////// 
+
     function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
         _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
@@ -181,4 +229,6 @@ contract BattleOfChains is Ownable {
     function _attack(uint256[] calldata tokenIds, uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
         emit Attack(tokenIds, _x, _y, msg.sender, _attacker, _targetChain, _strategy);
     }
+
+
 }
