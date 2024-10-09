@@ -12,20 +12,31 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // separate interface
 // rething naming everywhere
 // estimate costs, and balance order of params, and number of params emitted
+// test a uriManager contract
 
 contract BattleOfChains is Ownable {
+
+    struct Contract {
+        uint32 chain;
+        address contractAddress;
+        string observations;
+    }
 
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOfUser;
     mapping(uint32 => string) public tokenURIs;
     string public missingTypeURI;
     address public uriManager;
+    address public supportedContractsManager;
+    
+    Contract[] public supportedContracts;
 
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
     error IncorrectArrayLengths();
     error SenderIsNotURIManager();
+    error SenderIsNotSupportedContractsManager();
 
     event MultichainMint(
         uint256 _tokenId,
@@ -54,13 +65,33 @@ contract BattleOfChains is Ownable {
         _;
     }
 
+    modifier onlySupportedContractsManager {
+        if (msg.sender != supportedContractsManager) revert SenderIsNotSupportedContractsManager();
+        _;
+    }
+
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         collectionContract = IEvolutionCollection(_laosCollectionAddress);
         uriManager = msg.sender;
+        supportedContractsManager = msg.sender;
     }
 
     function setURIManager(address _newManager) public onlyURIManager {
         uriManager = _newManager;
+    }
+
+    function setSupportedContractsManager(address _newManager) public onlySupportedContractsManager {
+        supportedContractsManager = _newManager;
+    }
+
+    function addSupportedContract(uint32 _chain, address _contractAddress, string calldata _observations) public onlySupportedContractsManager {
+        supportedContracts.push(
+            Contract({
+                chain: _chain,
+                contractAddress: _contractAddress,
+                observations: _observations
+            })
+        );
     }
 
     function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public onlyURIManager {

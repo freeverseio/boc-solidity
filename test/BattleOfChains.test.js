@@ -15,17 +15,43 @@ describe("BattleOfChains", function () {
     expect(await battleOfChains.collectionContract()).to.equal(collectionAddress);
   });
 
-  it("only URI manager cna change URIs", async function () {
-    expect(await battleOfChains.uriManager()).to.equal(owner.address);
+  it("only contracts manager can add contracts", async function () {
+    expect(await battleOfChains.supportedContractsManager()).to.equal(owner.address);
+    const chain = 123;
+    const observations = 'used to trade on this chain';
+    await expect(battleOfChains.connect(addr1).addSupportedContract(chain, collectionAddress, observations))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotSupportedContractsManager")
 
-    await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
-      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+    await expect(battleOfChains.connect(owner).addSupportedContract(chain, collectionAddress, observations))
+      .not.to.be.reverted;
+  });
 
-    await expect(battleOfChains.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
-      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+  it("only contracts manager can add contracts", async function () {
+    expect(await battleOfChains.supportedContractsManager()).to.equal(owner.address);
+    const chain = 123;
+    const observations = 'used to trade on this chain';
+    await expect(battleOfChains.connect(addr1).addSupportedContract(chain, collectionAddress, observations))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotSupportedContractsManager")
 
-    await expect(battleOfChains.connect(addr1).setURIManager(addr1.address))
-      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+    await expect(battleOfChains.connect(owner).addSupportedContract(chain, collectionAddress, observations))
+      .not.to.be.reverted;
+  });
+
+
+  it("can set new contracts manager, who can then operate as expected", async function () {
+    expect(await battleOfChains.supportedContractsManager()).to.equal(owner.address);
+
+    await expect(battleOfChains.connect(addr1).setSupportedContractsManager(addr1.address))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotSupportedContractsManager")
+
+    await battleOfChains.connect(owner).setSupportedContractsManager(addr1.address);
+    expect(await battleOfChains.supportedContractsManager()).to.equal(addr1.address);
+
+    const chain = 123;
+    const observations = 'used to trade on this chain';
+
+    await expect(battleOfChains.connect(addr1).addSupportedContract(chain, collectionAddress, observations))
+      .not.to.be.reverted;
   });
 
   it("can set new URI manager, who can then operate as expected", async function () {
@@ -44,8 +70,6 @@ describe("BattleOfChains", function () {
     await expect(battleOfChains.connect(addr1).setURIManager(owner.address))
       .to.not.be.reverted;
   });
-
-  
 
   it("should return correct typeTokenURI for valid types", async function () {
     expect(await battleOfChains.typeTokenURI(0)).to.equal("");
