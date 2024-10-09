@@ -168,10 +168,14 @@ contract BattleOfChains is Ownable {
     }
 
     function hashChainAction(ChainAction calldata _chainAction) public pure returns (bytes32) {
-        return bytes32(0);
+        return keccak256(
+            abi.encode(
+                _chainAction.actionType,
+                _chainAction.attackArea,
+                _chainAction.attackAddress
+            )
+        );
     }
-
-    //////////////// 
 
     function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
