@@ -412,6 +412,23 @@ describe("BattleOfChains", function () {
     expect(chainActionHash).to.equal(expectedHash);
   });
 
+  it("should produce different hashes for different ChainActions", async function () {
+    const chainAction1 = {
+      actionType: ChainActionType.DEFEND,
+      attackArea: Attack_Area.NORTH,
+      attackAddress: nullAddress,
+    };
+
+    const chainAction2 = {
+      actionType: ChainActionType.DEFEND,
+      attackArea: Attack_Area.SOUTH,
+      attackAddress: nullAddress,
+    };
+
+    const hash1 = await battleOfChains.hashChainAction(chainAction1);
+    const hash2 = await battleOfChains.hashChainAction(chainAction2);
+    expect(hash1).to.not.equal(hash2);
+  });
 
 });
 
