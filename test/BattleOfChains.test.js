@@ -17,7 +17,28 @@ describe("BattleOfChains", function () {
 
     await expect(battleOfChains.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
       .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+
+    await expect(battleOfChains.connect(addr1).setURIManager(addr1.address))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
   });
+
+  it("can set new URI manager, who can then operate as expected", async function () {
+    await expect(battleOfChains.connect(addr1).setURIManager(addr1.address))
+      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
+
+    await battleOfChains.connect(owner).setURIManager(addr1.address);
+
+    await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
+      .to.not.be.reverted;
+
+    await expect(battleOfChains.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
+      .to.not.be.reverted;
+
+    await expect(battleOfChains.connect(addr1).setURIManager(owner.address))
+      .to.not.be.reverted;
+  });
+
+  
 
   it("should return correct typeTokenURI for valid types", async function () {
     expect(await battleOfChains.typeTokenURI(0)).to.equal("");

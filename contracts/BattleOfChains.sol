@@ -16,11 +16,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract BattleOfChains is Ownable {
 
     address public laosCollectionAddress;
-    IEvolutionCollection private immutable collectionContract = IEvolutionCollection(laosCollectionAddress);
+    IEvolutionCollection public immutable collectionContract = IEvolutionCollection(laosCollectionAddress);
     mapping(address user => uint32 homeChain) public homeChainOfUser;
     mapping(uint32 => string) public tokenURIs;
-    string missingTypeURI;
-    address uriManager;
+    string public missingTypeURI;
+    address public uriManager;
 
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
@@ -58,6 +58,10 @@ contract BattleOfChains is Ownable {
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         laosCollectionAddress = _laosCollectionAddress;
         uriManager = msg.sender;
+    }
+
+    function setURIManager(address _newManager) public onlyURIManager {
+        uriManager = _newManager;
     }
 
     function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public onlyURIManager {
