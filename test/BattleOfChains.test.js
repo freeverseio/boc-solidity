@@ -218,15 +218,64 @@ describe("BattleOfChains", function () {
       .withArgs(tokenIds, x, y, owner.address, delegatedUser, targetChain, strategy);
   });
 
-  it("areChainActionInputsCorrect should return true for valid inputs", async function () {
-    const chainAction = {
-      actionType: ChainActionType.DEFEND,
-      attackAddress: nullAddress,
-      attackArea: Attack_Area.NULL,
-    };
-    const isOK = await battleOfChains.areChainActionInputsCorrect(chainAction);
-    expect(isOK).to.be.true;
+  it("areChainActionInputsCorrect should return true for valid defend", async function () {
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.DEFEND,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.true;
   });
 
+  it("areChainActionInputsCorrect should return true for valid improve", async function () {
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.IMPROVE,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.true;
+  });
+
+  it("areChainActionInputsCorrect should return false for wrong defend", async function () {
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.DEFEND,
+          attackAddress: collectionAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.DEFEND,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;
+  });
+
+  it("areChainActionInputsCorrect should return false for wrong improve", async function () {
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.IMPROVE,
+          attackAddress: collectionAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          actionType: ChainActionType.IMPROVE,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;
+  });
 });
 
