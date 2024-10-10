@@ -3,6 +3,7 @@ pragma solidity >=0.8.27;
 
 import "./IEvolutionCollection.sol";
 import "./IBattleOfChains.sol";
+import "./URIManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Battle of Chains
@@ -22,21 +23,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // review != 0 in favour of just variable
 // consider need for actionHash if we don't have supportHash
 
-contract BattleOfChains is Ownable, IBattleOfChains {
+contract BattleOfChains is Ownable, IBattleOfChains, URIManager {
 
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOfUser;
-    mapping(uint32 => string) public tokenURIs;
-    string public missingTypeURI;
-    address public uriManager;
     address public supportedContractsManager;
     
     Contract[] public supportedContracts;
-
-    modifier onlyURIManager {
-        if (msg.sender != uriManager) revert SenderIsNotURIManager();
-        _;
-    }
 
     modifier onlySupportedContractsManager {
         if (msg.sender != supportedContractsManager) revert SenderIsNotSupportedContractsManager();
@@ -47,10 +40,6 @@ contract BattleOfChains is Ownable, IBattleOfChains {
         collectionContract = IEvolutionCollection(_laosCollectionAddress);
         uriManager = msg.sender;
         supportedContractsManager = msg.sender;
-    }
-
-    function setURIManager(address _newManager) public onlyURIManager {
-        uriManager = _newManager;
     }
 
     function setSupportedContractsManager(address _newManager) public onlySupportedContractsManager {
@@ -65,17 +54,6 @@ contract BattleOfChains is Ownable, IBattleOfChains {
                 observations: _observations
             })
         );
-    }
-
-    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public onlyURIManager {
-        if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
-        for (uint256 i = 0; i <_types.length; i++) {
-            tokenURIs[_types[i]] = _tokenURIs[i];
-        }
-    }
-
-    function setMissingTypeURI(string calldata _tokenURI) public onlyURIManager {
-        missingTypeURI = _tokenURI;
     }
 
     function joinChain(uint32 _homeChain) public {
@@ -152,11 +130,6 @@ contract BattleOfChains is Ownable, IBattleOfChains {
         } else {
             if (prevJoinedChain != _homeChain) revert UserAlreadyJoinedChain(msg.sender, prevJoinedChain);
         }
-    }
-
-    function typeTokenURI(uint32 _type) public view returns (string memory _uri) {
-        _uri = tokenURIs[_type];
-        return bytes(_uri).length == 0 ? missingTypeURI : _uri;
     }
 
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address _creator) {
