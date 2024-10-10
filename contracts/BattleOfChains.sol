@@ -7,20 +7,14 @@ import "./URIManager.sol";
 import "./SupportedContractsManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/// @title Battle of Chains
-/// @author LAOS Team and Freeverse
+/**
+ * @title BattleOfChains Main Contract
+ * @notice Developed and maintained by the LAOS Team and Freeverse.
+ * TODOS:
+ * - rething naming everywhere
+ * - estimate costs, and balance order of params, and number of params emitted
+ */
 
-// TODOS:
-// separate interface
-// rething naming everywhere
-// estimate costs, and balance order of params, and number of params emitted
-// test a uriManager contract
-// test a supportedContractManager
-// add daily chain action
-// consider using structs instead of separate variables
-// think of attacking a particular place
-// calldata vs memory in all functions
-// review != 0 in favour of just variable
 
 contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
@@ -48,6 +42,16 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) public {
+        _attack(_tokenIds, _targetAddress, msg.sender, _targetChain, _strategy);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+        _attack(_tokenIds, _targetAddress, _attacker, _targetChain, _strategy);
+    }
+
+    /// @inheritdoc IBattleOfChains
     function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) public {
         _proposeChainAction(msg.sender, _chainAction, _comment);
     }
@@ -57,18 +61,8 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         _proposeChainAction(_user, _chainAction, _comment);
     }
 
-    /// @inheritdoc IBattleOfChains
-    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
-        bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
-        bool _isAttackAreaNull = _chainAction.attackArea == Attack_Area.NULL;
-        bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
-        if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
-        }
-        if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
-        }
-        return _isTargetChainNull &&_isAttackAddressNull && _isAttackAreaNull;
+    function _attack(uint256[] calldata tokenIds, address _targetAddress, address _attacker, uint32 _targetChain, uint32 _strategy) private {
+        emit Attack(tokenIds, _targetAddress, msg.sender, _attacker, _targetChain, _strategy);
     }
 
     function _proposeChainAction(address _user, ChainAction calldata _chainAction, string calldata _comment) private {
@@ -86,6 +80,20 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
+        bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
+        bool _isAttackAreaNull = _chainAction.attackArea == Attack_Area.NULL;
+        bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
+        if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
+            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
+        }
+        if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
+            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
+        }
+        return _isTargetChainNull &&_isAttackAddressNull && _isAttackAreaNull;
+    }
+
+    /// @inheritdoc IBattleOfChains
     function creatorFromTokenId(uint256 _tokenId) public pure returns(address _creator) {
         return address(uint160(_tokenId));
     }
@@ -96,20 +104,6 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
 
         _x = uint256(user160 >> 80);
         _y = uint256(user160 & ((1 << 80) - 1));
-    }
-
-    /// @inheritdoc IBattleOfChains
-    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) public {
-        _attack(_tokenIds, _targetAddress, msg.sender, _targetChain, _strategy);
-    }
-
-    /// @inheritdoc IBattleOfChains
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) public {
-        _attack(_tokenIds, _targetAddress, _attacker, _targetChain, _strategy);
-    }
-
-    function _attack(uint256[] calldata tokenIds, address _targetAddress, address _attacker, uint32 _targetChain, uint32 _strategy) private {
-        emit Attack(tokenIds, _targetAddress, msg.sender, _attacker, _targetChain, _strategy);
     }
 
     /// @inheritdoc IBattleOfChains
