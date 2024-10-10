@@ -1,6 +1,5 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { AbiCoder, keccak256 } = require("ethers");
 
 describe("BattleOfChains", function () {
   let BattleOfChains, battleOfChains, owner, addr1;
