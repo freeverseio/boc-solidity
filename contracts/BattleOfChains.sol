@@ -4,6 +4,7 @@ pragma solidity >=0.8.27;
 import "./IEvolutionCollection.sol";
 import "./IBattleOfChains.sol";
 import "./URIManager.sol";
+import "./SupportedContractsManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Battle of Chains
@@ -23,37 +24,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // review != 0 in favour of just variable
 // consider need for actionHash if we don't have supportHash
 
-contract BattleOfChains is Ownable, IBattleOfChains, URIManager {
+contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOfUser;
-    address public supportedContractsManager;
-    
-    Contract[] public supportedContracts;
-
-    modifier onlySupportedContractsManager {
-        if (msg.sender != supportedContractsManager) revert SenderIsNotSupportedContractsManager();
-        _;
-    }
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         collectionContract = IEvolutionCollection(_laosCollectionAddress);
-        uriManager = msg.sender;
-        supportedContractsManager = msg.sender;
-    }
-
-    function setSupportedContractsManager(address _newManager) public onlySupportedContractsManager {
-        supportedContractsManager = _newManager;
-    }
-
-    function addSupportedContract(uint32 _chain, address _contractAddress, string calldata _observations) public onlySupportedContractsManager {
-        supportedContracts.push(
-            Contract({
-                chain: _chain,
-                contractAddress: _contractAddress,
-                observations: _observations
-            })
-        );
     }
 
     function joinChain(uint32 _homeChain) public {

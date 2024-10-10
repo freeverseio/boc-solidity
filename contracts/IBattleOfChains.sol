@@ -6,12 +6,6 @@ pragma solidity >=0.8.27;
 
 interface IBattleOfChains {
 
-    struct Contract {
-        uint32 chain;
-        address contractAddress;
-        string observations;
-    }
-
     enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
     enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
 
@@ -24,7 +18,6 @@ interface IBattleOfChains {
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
-    error SenderIsNotSupportedContractsManager();
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
 
@@ -60,13 +53,6 @@ interface IBattleOfChains {
         uint32 _strategy
     );
 
-    /**
-     * @notice Sets the address with permissions to add contracts supported by the Battle of Chains
-     * @param _newManager the new address that will have permission to add contracts supported by the Battle of Chains
-     */
-    function setSupportedContractsManager(address _newManager) external;
-
-    function addSupportedContract(uint32 _chain, address _contractAddress, string calldata _observations) external;
 
     function joinChain(uint32 _homeChain) external;
 
