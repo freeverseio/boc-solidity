@@ -1,26 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
-const { AbiCoder, keccak256 } = require("ethers");
 
 describe("URIManager", function () {
   let URIManager, uriManager, owner, addr1;
-  const collectionAddress = '0xfFfffFFFffFFFffffffFfFfe0000000000000001';
-  const nullAddress = '0x0000000000000000000000000000000000000000';
-  const ChainActionType = {
-    DEFEND: 0,
-    IMPROVE: 1,
-    ATTACK_AREA: 2,
-    ATTACK_ADDRESS: 3,
-  };
-  const Attack_Area = {
-    NULL: 0,
-    NORTH: 1,
-    SOUTH: 2,
-    EAST: 3,
-    WEST: 4,
-    ALL: 5,
-  };
-
   
   beforeEach(async function () {
     [owner, addr1] = await ethers.getSigners();
