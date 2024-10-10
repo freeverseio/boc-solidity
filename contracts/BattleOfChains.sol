@@ -44,17 +44,17 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         return _multichainMint(_homeChain, _type);
     }
 
-    function proposeChainAction(ChainAction calldata _chainAction) public {
-        _proposeChainAction(msg.sender, _chainAction);
+    function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) public {
+        _proposeChainAction(msg.sender, _chainAction, _comment);
     }
 
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) public {
-        _proposeChainAction(_user, _chainAction);
+    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) public {
+        _proposeChainAction(_user, _chainAction, _comment);
     }
 
-    function _proposeChainAction(address _user, ChainAction calldata _chainAction) private {
+    function _proposeChainAction(address _user, ChainAction calldata _chainAction, string calldata _comment) private {
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
-        emit ChainActionProposal(msg.sender, _user, _chainAction);
+        emit ChainActionProposal(msg.sender, _user, _chainAction, _comment);
     }
 
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {

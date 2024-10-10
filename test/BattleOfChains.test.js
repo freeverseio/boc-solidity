@@ -291,15 +291,17 @@ describe("BattleOfChains", function () {
         actionType: ChainActionType.DEFEND,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NORTH,
-      })
-    ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
+      },
+      "dummy comment"
+    )).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
     await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: nullAddress,
         attackArea: Attack_Area.NULL,
-      })
-    ).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
+      },
+      "dummy comment"
+    )).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
   });
 
   it("proposeChainAction succeeds on correct inputs", async function () {
@@ -308,15 +310,17 @@ describe("BattleOfChains", function () {
         actionType: ChainActionType.DEFEND,
         attackAddress: nullAddress,
         attackArea: Attack_Area.NULL,
-      })
-    ).not.to.be.reverted;
+      },
+      "dummy comment"
+    )).not.to.be.reverted;
     await expect(battleOfChains.proposeChainAction(
       {
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NULL,
-      })
-    ).not.to.be.reverted;
+      },
+      "dummy comment"
+    )).not.to.be.reverted;
   });
 
   it("emits ChainActionProposal event when proposeChainAction is called", async function () {
@@ -325,8 +329,9 @@ describe("BattleOfChains", function () {
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
     };
+    const comment = "dummy comment";
 
-    const tx = await battleOfChains.proposeChainAction(chainAction);
+    const tx = await battleOfChains.proposeChainAction(chainAction, comment);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")
@@ -334,6 +339,7 @@ describe("BattleOfChains", function () {
         owner.address,
         owner.address,
         [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        comment,
       );
   });
 
@@ -343,8 +349,9 @@ describe("BattleOfChains", function () {
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
     };
+    const comment = "dummy comment";
 
-    const tx = await battleOfChains.proposeChainActionOnBehalfOf(addr1.address, chainAction);
+    const tx = await battleOfChains.proposeChainActionOnBehalfOf(addr1.address, chainAction, comment);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")
@@ -352,6 +359,7 @@ describe("BattleOfChains", function () {
         owner.address,
         addr1.address,
         [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        comment,
       );
   });
 
