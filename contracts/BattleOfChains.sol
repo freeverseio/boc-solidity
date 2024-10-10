@@ -22,7 +22,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // think of attacking a particular place
 // calldata vs memory in all functions
 // review != 0 in favour of just variable
-// consider need for actionHash if we don't have supportHash
 
 contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
@@ -46,19 +45,17 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         return _multichainMint(_homeChain, _type);
     }
 
-    function proposeChainAction(ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
-        return _proposeChainAction(msg.sender, _chainAction);
+    function proposeChainAction(ChainAction calldata _chainAction) public {
+        _proposeChainAction(msg.sender, _chainAction);
     }
 
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) public returns (bytes32 _chainActionHash) {
-        return _proposeChainAction(_user, _chainAction);
+    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) public {
+        _proposeChainAction(_user, _chainAction);
     }
 
-    function _proposeChainAction(address _user, ChainAction calldata _chainAction) private returns (bytes32 _chainActionHash) {
+    function _proposeChainAction(address _user, ChainAction calldata _chainAction) private {
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
-        _chainActionHash = hashChainAction(_chainAction);
-        emit ChainActionProposal(msg.sender, _user, _chainAction, _chainActionHash);
-        return _chainActionHash;
+        emit ChainActionProposal(msg.sender, _user, _chainAction);
     }
 
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
@@ -71,16 +68,6 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
             return !_isAttackAddressNull && _isAttackAreaNull;
         }
         return _isAttackAddressNull && _isAttackAreaNull;
-    }
-
-    function hashChainAction(ChainAction calldata _chainAction) public pure returns (bytes32) {
-        return keccak256(
-            abi.encode(
-                _chainAction.actionType,
-                _chainAction.attackArea,
-                _chainAction.attackAddress
-            )
-        );
     }
 
     function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {

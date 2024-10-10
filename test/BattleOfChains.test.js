@@ -350,7 +350,6 @@ describe("BattleOfChains", function () {
     };
 
     const tx = await battleOfChains.proposeChainAction(chainAction);
-    const actionHash = await battleOfChains.hashChainAction(chainAction);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")
@@ -358,7 +357,6 @@ describe("BattleOfChains", function () {
         owner.address,
         owner.address,
         [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
-        actionHash
       );
   });
 
@@ -370,7 +368,6 @@ describe("BattleOfChains", function () {
     };
 
     const tx = await battleOfChains.proposeChainActionOnBehalfOf(addr1.address, chainAction);
-    const actionHash = await battleOfChains.hashChainAction(chainAction);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")
@@ -378,45 +375,7 @@ describe("BattleOfChains", function () {
         owner.address,
         addr1.address,
         [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
-        actionHash
       );
-  });
-
-  it("should correctly hash a ChainAction struct", async function () {
-    const chainAction = {
-      actionType: ChainActionType.ATTACK_AREA,
-      attackArea: Attack_Area.NORTH,
-      attackAddress: nullAddress,
-    };
-
-    const expectedHash = keccak256(
-      AbiCoder.defaultAbiCoder().encode(
-        ["uint8", "uint8", "address"],
-        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress]
-      )
-    );
-
-    const chainActionHash = await battleOfChains.hashChainAction(chainAction);
-
-    expect(chainActionHash).to.equal(expectedHash);
-  });
-
-  it("should produce different hashes for different ChainActions", async function () {
-    const chainAction1 = {
-      actionType: ChainActionType.DEFEND,
-      attackArea: Attack_Area.NORTH,
-      attackAddress: nullAddress,
-    };
-
-    const chainAction2 = {
-      actionType: ChainActionType.DEFEND,
-      attackArea: Attack_Area.SOUTH,
-      attackAddress: nullAddress,
-    };
-
-    const hash1 = await battleOfChains.hashChainAction(chainAction1);
-    const hash2 = await battleOfChains.hashChainAction(chainAction2);
-    expect(hash1).to.not.equal(hash2);
   });
 
 });

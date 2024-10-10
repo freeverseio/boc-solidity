@@ -24,12 +24,9 @@ interface IBattleOfChains {
     event ChainActionProposal(
         address indexed _operator,
         address indexed _user,
-        ChainAction _action,
-        bytes32 _actionHash
+        ChainAction _action
     );
-    // emit also originChain , targetChain
-
-    
+    // TODO: emit also originChain , targetChain
 
     event MultichainMint(
         uint256 _tokenId,
@@ -58,14 +55,12 @@ interface IBattleOfChains {
 
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
 
-    // we kill all hashes. VoteForChainAction, add "comment", elimintate hashes
-    function proposeChainAction(ChainAction calldata _chainAction) external returns (bytes32 _chainActionHash);
+    // VoteForChainAction, add "comment"
+    function proposeChainAction(ChainAction calldata _chainAction) external;
 
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) external returns (bytes32 _chainActionHash);
+    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction) external;
 
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) external pure returns (bool _isOK);
-
-    function hashChainAction(ChainAction calldata _chainAction) external pure returns (bytes32);
 
     function creatorFromTokenId(uint256 _tokenId) external pure returns(address _creator);
 
