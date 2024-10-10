@@ -30,7 +30,8 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     /// @inheritdoc IBattleOfChains
     function joinChain(uint32 _homeChain) public {
         if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
-        if (homeChainOf[msg.sender] != NULL_CHAIN) revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
+        if (homeChainOf[msg.sender] != NULL_CHAIN)
+            revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
         homeChainOf[msg.sender] = _homeChain;
         emit JoinedChain(msg.sender, _homeChain);
     }
@@ -43,30 +44,65 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) public {
+    function attack(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy
+    ) public {
         _attack(_tokenIds, _targetAddress, msg.sender, _targetChain, _strategy);
     }
 
     /// @inheritdoc IBattleOfChains
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+    function attackOnBehalfOf(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy,
+        address _attacker
+    ) public {
         _attack(_tokenIds, _targetAddress, _attacker, _targetChain, _strategy);
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) public {
+    function proposeChainAction(
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) public {
         _proposeChainAction(msg.sender, _chainAction, _comment);
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) public {
+    function proposeChainActionOnBehalfOf(
+        address _user,
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) public {
         _proposeChainAction(_user, _chainAction, _comment);
     }
 
-    function _attack(uint256[] calldata tokenIds, address _targetAddress, address _attacker, uint32 _targetChain, uint32 _strategy) private {
-        emit Attack(tokenIds, _targetAddress, msg.sender, _attacker, _targetChain, _strategy);
+    function _attack(
+        uint256[] calldata tokenIds,
+        address _targetAddress,
+        address _attacker,
+        uint32 _targetChain,
+        uint32 _strategy
+    ) private {
+        emit Attack(
+            tokenIds,
+            _targetAddress,
+            msg.sender,
+            _attacker,
+            _targetChain,
+            _strategy
+        );
     }
 
-    function _proposeChainAction(address _user, ChainAction calldata _chainAction, string calldata _comment) private {
+    function _proposeChainAction(
+        address _user,
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) private {
         uint32 _sourceChain = homeChainOf[_user];
         if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
@@ -88,10 +124,13 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
             return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
         }
-        if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
+        if (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
+            return
+                !_isTargetChainNull &&
+                !_isAttackAddressNull &&
+                _isAttackAreaNull;
         }
-        return _isTargetChainNull &&_isAttackAddressNull && _isAttackAreaNull;
+        return _isTargetChainNull && _isAttackAddressNull && _isAttackAreaNull;
     }
 
     /// @inheritdoc IBattleOfChains
@@ -108,7 +147,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function hasHomeChain(address _user) public view returns(bool) {
+    function hasHomeChain(address _user) public view returns (bool) {
         return homeChainOf[_user] != NULL_CHAIN;
     }
 }
