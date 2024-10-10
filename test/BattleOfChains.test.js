@@ -346,6 +346,7 @@ describe("BattleOfChains", function () {
   });
 
   it("proposeChainAction fails on wrong inputs", async function () {
+    await battleOfChains.joinChain(32);
     await expect(battleOfChains.proposeChainAction(
       {
         targetChain: 0,
@@ -367,6 +368,7 @@ describe("BattleOfChains", function () {
   });
 
   it("proposeChainAction succeeds on correct inputs", async function () {
+    await battleOfChains.joinChain(32);
     await expect(battleOfChains.proposeChainAction(
       {
         targetChain: 0,
@@ -378,7 +380,7 @@ describe("BattleOfChains", function () {
     )).not.to.be.reverted;
     await expect(battleOfChains.proposeChainAction(
       {
-        targetChain: 0,
+        targetChain: 12,
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NULL,
@@ -388,8 +390,10 @@ describe("BattleOfChains", function () {
   });
 
   it("emits ChainActionProposal event when proposeChainAction is called", async function () {
+    await battleOfChains.joinChain(sourceChain = 32);
+    const _targetChain = 0;
     const chainAction = {
-      targetChain: 0,
+      targetChain: _targetChain,
       actionType: ChainActionType.DEFEND,
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
@@ -403,12 +407,15 @@ describe("BattleOfChains", function () {
       .withArgs(
         owner.address,
         owner.address,
-        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        sourceChain,
+        [_targetChain, chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
         comment,
       );
   });
 
   it("emits ChainActionProposal event when proposeChainActionOnBehalfOf is called", async function () {
+    await battleOfChains.connect(addr1).joinChain(sourceChain = 32);
+    const _targetChain = 0;
     const chainAction = {
       targetChain: 0,
       actionType: ChainActionType.DEFEND,
@@ -424,7 +431,8 @@ describe("BattleOfChains", function () {
       .withArgs(
         owner.address,
         addr1.address,
-        [chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
+        sourceChain,
+        [_targetChain, chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
         comment,
       );
   });
