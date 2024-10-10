@@ -6,9 +6,18 @@ pragma solidity >=0.8.27;
 
 interface IBattleOfChains {
 
+    // The possible set of chain actions:
     enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
+
+    // The possible set of attack areas used in actions of type ATTACK_AREA
+    // The ATTACK_AREA must be NULL unless the desired action type is ATTACK_AREA
     enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
 
+    /**
+     * @dev Represents an action proposed by a user to its home chain 
+     * Used as input to functions that require details about chain actions,
+     * as well as to emitted events.
+     */
     struct ChainAction {
         uint32 targetChain;
         ChainActionType actionType;
@@ -22,14 +31,20 @@ interface IBattleOfChains {
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
 
-    event ChainActionProposal(
-        address indexed _operator,
-        address indexed _user,
-        uint32 _sourceChain,
-        ChainAction _action,
-        string _comment
+    /**
+     * @dev Emitted when a user joins a chain. The chain is specified by its chain ID
+     */
+    event JoinedChain(
+        address indexed _user, 
+        uint32 indexed _homeChain
     );
 
+    /**
+     * @dev Emitted when a user performs a multichain mint, specifying the homechain
+     * to which the user is assigned, the type of mint, and the tokenId.
+     * The resulting tokenId identifies every NFT produced in all supported contracts
+     * on all supported chains.
+     */
     event MultichainMint(
         uint256 _tokenId,
         address indexed _user, 
@@ -37,11 +52,11 @@ interface IBattleOfChains {
         uint32 indexed _homeChain
     );
 
-    event JoinedChain(
-        address indexed _user, 
-        uint32 indexed _homeChain
-    );
-
+    /**
+     * @dev Emitted when a user performs an attack within a target chain, at the specified targetAddress,
+     * using the assets owned in the target chain, with the provided attack strategy.
+     * If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
+     */
     event Attack(
         uint256[] _tokenIds,
         address _targetAddress,
@@ -51,6 +66,20 @@ interface IBattleOfChains {
         uint32 _strategy
     );
 
+    /**
+     * @dev Emitted when a user proposes a chain action to be performed.
+     * This event captures the details of the proposed action, including the operator initiating
+     * the proposal, the user for whom the action is proposed, the source chain, the action details, 
+     * and any additional comments.
+     * User and operator coincide if the user sent the proposal transaction directly
+     */
+    event ChainActionProposal(
+        address indexed _operator,
+        address indexed _user,
+        uint32 _sourceChain,
+        ChainAction _action,
+        string _comment
+    );
 
     /**
      * @notice Assigns the sender of the transaction to the specified chain. The assignment cannot be changed.
