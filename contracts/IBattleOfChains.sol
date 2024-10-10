@@ -56,9 +56,6 @@ interface IBattleOfChains {
 
     function joinChain(uint32 _homeChain) external;
 
-    // eliminate this:
-    function multichainMint(uint32 _homeChain, uint32 _type) external returns (uint256 _tokenId);
-
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
 
     // we kill all hashes. VoteForChainAction, add "comment", elimintate hashes

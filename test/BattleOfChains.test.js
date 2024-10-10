@@ -127,41 +127,10 @@ describe("BattleOfChains", function () {
   });
 
 
-  it("cannot mint with null homechain", async function () {
-    await expect(battleOfChains["multichainMint(uint32,uint32)"](homechain = 0, type = 3))
-      .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
-  });
-
-  it("cannot mint using homechain different from previously joined chain", async function () {
-    await battleOfChains.joinChain(homechain = 1);
-    await expect(battleOfChains["multichainMint(uint32,uint32)"](newhomechain = 2, type = 3))
-      .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
-      .withArgs(owner.address, homechain);
-  });
-
   it("cannot mint without specifying homeChain nor joining previously", async function () {
     await expect(battleOfChains["multichainMint(uint32)"](type = 3))
       .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
       .withArgs(owner.address);
-  });
-
-  it("joinChainIfNeeded fails if previously joined a different chain", async function () {
-    await battleOfChains.joinChain(homechain = 1);
-    await expect(battleOfChains.joinChainIfNeeded(newhomechain = 2))
-      .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
-      .withArgs(owner.address, homechain);
-  });
-
-  it("joinChainIfNeeded succeeds if previously joined the same chain", async function () {
-    await battleOfChains.joinChain(homechain = 1);
-    await expect(battleOfChains.joinChainIfNeeded(homechain))
-      .to.not.be.reverted;
-  });
-
-  it("joinChainIfNeeded succeeds if previously did not join any chain", async function () {
-    expect(await battleOfChains.homeChainOfUser(owner)).to.equal(0);
-    await expect(battleOfChains.joinChainIfNeeded(homechain = 3))
-      .to.not.be.reverted;
   });
 
   it("getCoordinates works as expected", async function () {
