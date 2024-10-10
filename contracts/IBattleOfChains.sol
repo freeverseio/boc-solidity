@@ -87,10 +87,39 @@ interface IBattleOfChains {
      * @notice transaction sender as operator.
      * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
      * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
+     * @param _user The user on whose behalf the sender is attempting to perform the action.
      * @param _chainAction the desired action to be performed by the chain of the provided user in the current period
      * @param _comment a completely optional string arguing about the convenience of the proposed action
      */
     function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) external;
+
+    /**
+     * @notice Executes an attack on the provideed target chain, at the provided targetAddress, with the assets
+     * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy. 
+     * @notice If _tokenIds are an empty list, it default to attack with all possible assets owned by the sender in the target chain.
+     * @notice The effect of the attack depends on the offchain state of the user and the game.
+     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used. 
+     * @param _targetAddress the address in the targetChain to attack. 
+     * @param _targetChain the chainId of the chain where the attack is to be performed. 
+     * @param _strategy a uint32 specifying the attack strategy. 
+     */
+    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) external;
+
+    /**
+     * @notice Tries to perform an attack on behalf of the provided attacker address.
+     * @notice The effect is completely disregarded offchain unless the attacker has previously authorized the
+     * @notice transaction sender as operator.
+     * @notice If not disregarded, it executes an attack on the provideed target chain, at the provided targetAddress, with the assets
+     * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy. 
+     * @notice If _tokenIds are an empty list, it default to attack with all possible assets owned by the sender in the target chain.
+     * @notice The effect of the attack depends on the offchain state of the attacker and the game.
+     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used. 
+     * @param _targetAddress the address in the targetChain to attack. 
+     * @param _targetChain the chainId of the chain where the attack is to be performed. 
+     * @param _strategy a uint32 specifying the attack strategy. 
+     * @param _attacker The user on whose behalf the sender is attempting to perform the action.
+     */
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) external;
 
     /**
      * @notice Returns true if the provided chainAction is formally correct
@@ -100,27 +129,18 @@ interface IBattleOfChains {
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) external pure returns (bool _isOK);
 
     /**
-     * @notice Returns true if provided user has previously joined a chain
-     * @param _tokenId the address of the user
+     * @notice Returns the user that executed the multichain corresponding to the provided tokenId.
+     * @notice Note that the NFTs minted on different chains may have been traded are be owned by other players.
+     * @param _tokenId the tokenId of the multichain mint
+     * @return _creator the address of the user that executed the multichain
      */
     function creatorFromTokenId(uint256 _tokenId) external pure returns(address _creator);
 
     /**
-     * @notice Returns true if provided user has previously joined a chain
+     * @notice Returns (x,y) coordinates associated to the provided address
      * @param _user the address of the user
      */
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
-    /**
-     * @notice Returns true if provided user has previously joined a chain
-     * @param _tokenIds the address of the user
-     */
-    function attack(uint256[] calldata _tokenIds, address targetAddress, uint32 _targetChain, uint32 _strategy) external;
-
-    /**
-     * @notice Returns true if provided user has previously joined a chain
-     * @param _tokenIds the address of the user
-     */
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) external;
 
 }
