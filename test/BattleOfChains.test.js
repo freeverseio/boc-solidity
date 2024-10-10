@@ -107,9 +107,9 @@ describe("BattleOfChains", function () {
   });
 
   it("user can join a chain, only once", async function () {
-    expect(await battleOfChains.homeChainOfUser(owner)).to.equal(0);
+    expect(await battleOfChains.homeChainOf(owner)).to.equal(0);
     await battleOfChains.joinChain(homechain = 3);
-    expect(await battleOfChains.homeChainOfUser(owner)).to.equal(homechain);
+    expect(await battleOfChains.homeChainOf(owner)).to.equal(homechain);
     await expect(battleOfChains.joinChain(newchain = 2))
       .to.be.revertedWithCustomError(battleOfChains, "UserAlreadyJoinedChain")
       .withArgs(owner.address, homechain);

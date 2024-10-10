@@ -10,6 +10,7 @@ interface IBattleOfChains {
     enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
 
     struct ChainAction {
+        uint32 targetChain;
         ChainActionType actionType;
         Attack_Area attackArea;
         address attackAddress;
@@ -24,10 +25,10 @@ interface IBattleOfChains {
     event ChainActionProposal(
         address indexed _operator,
         address indexed _user,
+        uint32 _sourceChain,
         ChainAction _action,
         string _comment
     );
-    // TODO: emit also originChain , targetChain
 
     event MultichainMint(
         uint256 _tokenId,
@@ -55,7 +56,6 @@ interface IBattleOfChains {
 
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
 
-    // VoteForChainAction, add "comment"
     function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) external;
 
     function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) external;

@@ -24,8 +24,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
+    uint32 private constant NULL_CHAIN = 0;
     IEvolutionCollection public immutable collectionContract;
-    mapping(address user => uint32 homeChain) public homeChainOfUser;
+    mapping(address user => uint32 homeChain) public homeChainOf;
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
         collectionContract = IEvolutionCollection(_laosCollectionAddress);
@@ -33,14 +34,14 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
 
     function joinChain(uint32 _homeChain) public {
         if (_homeChain == 0) revert HomeChainMustBeGreaterThanZero();
-        if (homeChainOfUser[msg.sender] != 0) revert UserAlreadyJoinedChain(msg.sender, homeChainOfUser[msg.sender]);
-        homeChainOfUser[msg.sender] = _homeChain;
+        if (homeChainOf[msg.sender] != NULL_CHAIN) revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
+        homeChainOf[msg.sender] = _homeChain;
         emit JoinedChain(msg.sender, _homeChain);
     }
 
     function multichainMint(uint32 _type) public returns (uint256 _tokenId) {
-        uint32 _homeChain = homeChainOfUser[msg.sender];
-        if (_homeChain == 0) revert UserHasNotJoinedChainYet(msg.sender);
+        uint32 _homeChain = homeChainOf[msg.sender];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
         return _multichainMint(_homeChain, _type);
     }
 
@@ -53,20 +54,23 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     function _proposeChainAction(address _user, ChainAction calldata _chainAction, string calldata _comment) private {
+        uint32 _sourceChain = homeChainOf[_user];
+        if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
-        emit ChainActionProposal(msg.sender, _user, _chainAction, _comment);
+        emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
     }
 
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
         bool _isAttackAreaNull = _chainAction.attackArea == Attack_Area.NULL;
+        bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            return _isAttackAddressNull && !_isAttackAreaNull;
+            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
         }
         if  (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return !_isAttackAddressNull && _isAttackAreaNull;
+            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
         }
-        return _isAttackAddressNull && _isAttackAreaNull;
+        return _isTargetChainNull &&_isAttackAddressNull && _isAttackAreaNull;
     }
 
     function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {
