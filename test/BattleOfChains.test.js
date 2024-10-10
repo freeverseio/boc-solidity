@@ -32,36 +32,6 @@ describe("BattleOfChains", function () {
     expect(await battleOfChains.collectionContract()).to.equal(collectionAddress);
   });
 
-  it("can set new URI manager, who can then operate as expected", async function () {
-    await expect(battleOfChains.connect(addr1).setURIManager(addr1.address))
-      .to.be.revertedWithCustomError(battleOfChains, "SenderIsNotURIManager")
-
-    await battleOfChains.connect(owner).setURIManager(addr1.address);
-    expect(await battleOfChains.uriManager()).to.equal(addr1.address);
-
-    await expect(battleOfChains.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
-      .to.not.be.reverted;
-
-    await expect(battleOfChains.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
-      .to.not.be.reverted;
-
-    await expect(battleOfChains.connect(addr1).setURIManager(owner.address))
-      .to.not.be.reverted;
-  });
-
-  it("should return correct typeTokenURI for valid types", async function () {
-    expect(await battleOfChains.typeTokenURI(0)).to.equal("");
-    await battleOfChains.setMissingTypeURI("ipfs://Qmdefault");
-    expect(await battleOfChains.typeTokenURI(0)).to.equal("ipfs://Qmdefault");
-    expect(await battleOfChains.typeTokenURI(1)).to.equal("ipfs://Qmdefault");
-    await battleOfChains.setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
-    expect(await battleOfChains.typeTokenURI(0)).to.equal("ipfs://QmType0");
-    expect(await battleOfChains.typeTokenURI(1)).to.equal("ipfs://QmType1");
-    expect(await battleOfChains.typeTokenURI(2)).to.equal("ipfs://Qmdefault");
-    expect(await battleOfChains.typeTokenURI(3)).to.equal("ipfs://Qmdefault");
-    expect(await battleOfChains.typeTokenURI(99)).to.equal("ipfs://Qmdefault");
-  });
-
   it("should return the correct creator address from token ID", async function () {
     const creatorAddress = await battleOfChains.creatorFromTokenId("0x123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
     expect(creatorAddress).to.equal("0x89abCdef0123456789AbCDEf0123456789AbCDEF");

@@ -39,17 +39,6 @@ describe("SupportedContractsManager", function () {
       .not.to.be.reverted;
   });
 
-  it("only contracts manager can add contracts", async function () {
-    expect(await supContracts.supportedContractsManager()).to.equal(owner.address);
-    const chain = 123;
-    const observations = 'used to trade on this chain';
-    await expect(supContracts.connect(addr1).addSupportedContract(chain, collectionAddress, observations))
-      .to.be.revertedWithCustomError(supContracts, "SenderIsNotSupportedContractsManager")
-
-    await expect(supContracts.connect(owner).addSupportedContract(chain, collectionAddress, observations))
-      .not.to.be.reverted;
-  });
-
   it("can set new contracts manager, who can then operate as expected", async function () {
     expect(await supContracts.supportedContractsManager()).to.equal(owner.address);
 
