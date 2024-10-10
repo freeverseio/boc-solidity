@@ -9,11 +9,10 @@ import "./ISupportedContractsManager.sol";
  */
 
 contract SupportedContractsManager is ISupportedContractsManager {
-
-    // The address authorized to manage the supported contracts 
+    // The address authorized to manage the supported contracts
     address public supportedContractsManager;
-    
-    // The array containing all currently supported contracts 
+
+    // The array containing all currently supported contracts
     Contract[] public supportedContracts;
 
     modifier onlySupportedContractsManager {
@@ -31,7 +30,11 @@ contract SupportedContractsManager is ISupportedContractsManager {
     }
 
     /// @inheritdoc ISupportedContractsManager
-    function addSupportedContract(uint32 _chain, address _contractAddress, string calldata _observations) public onlySupportedContractsManager {
+    function addSupportedContract(
+        uint32 _chain,
+        address _contractAddress,
+        string calldata _observations
+    ) public onlySupportedContractsManager {
         supportedContracts.push(
             Contract({
                 chain: _chain,
