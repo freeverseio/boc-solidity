@@ -208,6 +208,15 @@ describe("BattleOfChains", function () {
           attackArea: Attack_Area.NORTH,
         }
     )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          targetChain: 1,
+          actionType: ChainActionType.DEFEND,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
   });
 
   it("areChainActionInputsCorrect should return false for wrong improve", async function () {
@@ -227,6 +236,14 @@ describe("BattleOfChains", function () {
           actionType: ChainActionType.IMPROVE,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;    expect(
+    await battleOfChains.areChainActionInputsCorrect(
+        {
+          targetChain: 1,
+          actionType: ChainActionType.IMPROVE,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NULL,
         }
     )).to.be.false;
   });
@@ -259,7 +276,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
-          targetChain: 0,
+          targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
@@ -268,10 +285,19 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
-          targetChain: 0,
+          targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          targetChain: 0,
+          actionType: ChainActionType.ATTACK_ADDRESS,
+          attackAddress: collectionAddress,
+          attackArea: Attack_Area.NULL,
         }
     )).to.be.false;
   });
@@ -280,7 +306,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
-          targetChain: 0,
+          targetChain: 12,
           actionType: ChainActionType.ATTACK_AREA,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NORTH,
@@ -289,10 +315,19 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
-          targetChain: 0,
+          targetChain: 12,
           actionType: ChainActionType.ATTACK_AREA,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        {
+          targetChain: 0,
+          actionType: ChainActionType.ATTACK_AREA,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NORTH,
         }
     )).to.be.false;
   });
