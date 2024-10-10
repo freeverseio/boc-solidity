@@ -102,4 +102,8 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     function _attack(uint256[] calldata tokenIds, address _targetAddress, address _attacker, uint32 _targetChain, uint32 _strategy) private {
         emit Attack(tokenIds, _targetAddress, msg.sender, _attacker, _targetChain, _strategy);
     }
+
+    function hasHomeChain(address _user) public view returns(bool) {
+        return homeChainOf[_user] != NULL_CHAIN;
+    }
 }

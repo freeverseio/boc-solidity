@@ -54,6 +54,8 @@ interface IBattleOfChains {
 
     function joinChain(uint32 _homeChain) external;
 
+    function hasHomeChain(address _user) external returns (bool);
+
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
 
     function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) external;

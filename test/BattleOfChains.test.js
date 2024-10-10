@@ -169,6 +169,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.DEFEND,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
@@ -180,6 +181,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.IMPROVE,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
@@ -191,6 +193,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.DEFEND,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NULL,
@@ -199,6 +202,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.DEFEND,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NORTH,
@@ -210,6 +214,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.IMPROVE,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NULL,
@@ -218,6 +223,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.IMPROVE,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NORTH,
@@ -229,6 +235,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NULL,
@@ -240,6 +247,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 41,
           actionType: ChainActionType.ATTACK_AREA,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NORTH,
@@ -251,6 +259,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.ATTACK_ADDRESS,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
@@ -259,6 +268,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.ATTACK_ADDRESS,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NORTH,
@@ -270,6 +280,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.ATTACK_AREA,
           attackAddress: collectionAddress,
           attackArea: Attack_Area.NORTH,
@@ -278,6 +289,7 @@ describe("BattleOfChains", function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         {
+          targetChain: 0,
           actionType: ChainActionType.ATTACK_AREA,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NULL,
@@ -285,9 +297,58 @@ describe("BattleOfChains", function () {
     )).to.be.false;
   });
 
+  it("proposeChainAction fails if user has not joined yet", async function () {
+    expect(await battleOfChains.hasHomeChain(owner)).to.be.false;
+    await expect(battleOfChains.proposeChainAction(
+      {
+        targetChain: 0,
+        actionType: ChainActionType.DEFEND,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      },
+      "dummy comment"
+    )).to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet");
+    await battleOfChains.joinChain(32);
+    await expect(battleOfChains.proposeChainAction(
+      {
+        targetChain: 0,
+        actionType: ChainActionType.DEFEND,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      },
+      "dummy comment"
+    )).not.to.be.reverted;
+  });
+
+  it("proposeChainActionOnBehalfOf fails if user has not joined yet", async function () {
+    expect(await battleOfChains.hasHomeChain(addr1)).to.be.false;
+    await expect(battleOfChains.proposeChainActionOnBehalfOf(
+      addr1.address,
+      {
+        targetChain: 0,
+        actionType: ChainActionType.DEFEND,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      },
+      "dummy comment"
+    )).to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet");
+    await battleOfChains.connect(addr1).joinChain(32);
+    await expect(battleOfChains.proposeChainActionOnBehalfOf(
+      addr1.address,
+      {
+        targetChain: 0,
+        actionType: ChainActionType.DEFEND,
+        attackAddress: nullAddress,
+        attackArea: Attack_Area.NULL,
+      },
+      "dummy comment"
+    )).not.to.be.reverted;
+  });
+
   it("proposeChainAction fails on wrong inputs", async function () {
     await expect(battleOfChains.proposeChainAction(
       {
+        targetChain: 0,
         actionType: ChainActionType.DEFEND,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NORTH,
@@ -296,6 +357,7 @@ describe("BattleOfChains", function () {
     )).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
     await expect(battleOfChains.proposeChainAction(
       {
+        targetChain: 0,
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: nullAddress,
         attackArea: Attack_Area.NULL,
@@ -307,6 +369,7 @@ describe("BattleOfChains", function () {
   it("proposeChainAction succeeds on correct inputs", async function () {
     await expect(battleOfChains.proposeChainAction(
       {
+        targetChain: 0,
         actionType: ChainActionType.DEFEND,
         attackAddress: nullAddress,
         attackArea: Attack_Area.NULL,
@@ -315,6 +378,7 @@ describe("BattleOfChains", function () {
     )).not.to.be.reverted;
     await expect(battleOfChains.proposeChainAction(
       {
+        targetChain: 0,
         actionType: ChainActionType.ATTACK_ADDRESS,
         attackAddress: collectionAddress,
         attackArea: Attack_Area.NULL,
@@ -325,6 +389,7 @@ describe("BattleOfChains", function () {
 
   it("emits ChainActionProposal event when proposeChainAction is called", async function () {
     const chainAction = {
+      targetChain: 0,
       actionType: ChainActionType.DEFEND,
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
@@ -345,6 +410,7 @@ describe("BattleOfChains", function () {
 
   it("emits ChainActionProposal event when proposeChainActionOnBehalfOf is called", async function () {
     const chainAction = {
+      targetChain: 0,
       actionType: ChainActionType.DEFEND,
       attackArea: Attack_Area.NULL,
       attackAddress: nullAddress,
