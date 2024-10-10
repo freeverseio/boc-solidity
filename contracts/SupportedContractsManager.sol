@@ -34,4 +34,11 @@ contract SupportedContractsManager is ISupportedContractsManager {
             })
         );
     }
+
+    function allSupportedContracts() public view returns(Contract[] memory _allContracts) {
+        _allContracts = new Contract[](supportedContracts.length);
+        for (uint256 i = 0; i < supportedContracts.length; i++) {
+            _allContracts[i] = supportedContracts[i];
+        }
+    }
 }
