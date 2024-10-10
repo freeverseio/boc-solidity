@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
@@ -85,8 +87,6 @@ describe("SupportedContractsManager", function () {
     expect(allContracts[1].chain).to.equal(contractsToAdd[1].chainId);
     expect(allContracts[1].contractAddress).to.equal(contractsToAdd[1].address);
     expect(allContracts[1].observations).to.equal(contractsToAdd[1].observations);
-    
-
   });  
 
 });
