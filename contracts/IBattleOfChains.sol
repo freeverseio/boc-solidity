@@ -5,28 +5,39 @@ pragma solidity >=0.8.27;
  * @title IBattleOfChains Interface
  * @dev Interface for the Battle of Chains contract, which defines
  * the structure and functions required for implementing the Battle of Chains logic.
- * This interface outlines the core functionalities for managing user actions, 
+ * This interface outlines the core functionalities for managing user actions,
  * cross-chain interactions, and NFT minting in a game environment.
  * It is intended to be implemented by contracts that manage game logic and interactions.
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
 interface IBattleOfChains {
-
     /**
      * @dev The set of possible chain actions:
      */
-    enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
+    enum ChainActionType {
+        DEFEND,
+        IMPROVE,
+        ATTACK_AREA,
+        ATTACK_ADDRESS
+    }
 
     /**
-     * @dev 
+     * @dev
      * The set of possible attack areas used in actions of type ATTACK_AREA
      * If the desired action is not of type ATTACK_AREA, then Attac_Area must be set to NULL
-    */
-    enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
+     */
+    enum Attack_Area {
+        NULL,
+        NORTH,
+        SOUTH,
+        EAST,
+        WEST,
+        ALL
+    }
 
     /**
-     * @dev Represents an action proposed by a user to its home chain 
+     * @dev Represents an action proposed by a user to its home chain
      * Used as input to functions that require details about chain actions,
      * as well as to emitted events.
      */
@@ -46,10 +57,7 @@ interface IBattleOfChains {
     /**
      * @dev Emitted when a user joins a chain. The chain is specified by its chain ID
      */
-    event JoinedChain(
-        address indexed _user, 
-        uint32 indexed _homeChain
-    );
+    event JoinedChain(address indexed _user, uint32 indexed _homeChain);
 
     /**
      * @dev Emitted when a user performs a multichain mint, specifying the homechain
@@ -59,7 +67,7 @@ interface IBattleOfChains {
      */
     event MultichainMint(
         uint256 _tokenId,
-        address indexed _user, 
+        address indexed _user,
         uint32 indexed _type,
         uint32 indexed _homeChain
     );
@@ -81,7 +89,7 @@ interface IBattleOfChains {
     /**
      * @dev Emitted when a user proposes a chain action to be performed.
      * This event captures the details of the proposed action, including the operator initiating
-     * the proposal, the user for whom the action is proposed, the source chain, the action details, 
+     * the proposal, the user for whom the action is proposed, the source chain, the action details,
      * and any additional comments.
      * User and operator coincide if the user sent the proposal transaction directly
      */
@@ -103,7 +111,7 @@ interface IBattleOfChains {
     /**
      * @notice Mints NFTs across all supported chains of the provided _type
      * @notice The attributes of the minted NFT depend on the current state of the user and the game
-     * @param _type A uint32 specifying the desired type of minted NFTs 
+     * @param _type A uint32 specifying the desired type of minted NFTs
      * @return _tokenId The tokenId that identifies the minted NFTs in the contracts on all supported chains
      */
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
@@ -113,27 +121,38 @@ interface IBattleOfChains {
      * @notice specified by _tokenIds, using the provided attack strategy.
      * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
      * @notice The effect of the attack depends on the offchain state of the user and the game.
-     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used. 
-     * @param _targetAddress the address in the targetChain to attack. 
-     * @param _targetChain the chainId of the chain where the attack is to be performed. 
-     * @param _strategy a uint32 specifying the attack strategy. 
+     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used.
+     * @param _targetAddress the address in the targetChain to attack.
+     * @param _targetChain the chainId of the chain where the attack is to be performed.
+     * @param _strategy a uint32 specifying the attack strategy.
      */
-    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) external;
+    function attack(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy
+    ) external;
 
     /**
      * @notice Tries to perform an attack on behalf of the provided attacker address.
      * @notice The effect is disregarded off-chain unless the user has authorized the transaction sender as an operator
      * @notice If not disregarded, it executes an attack on the provideed target chain, at the provided targetAddress, with the assets
-     * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy. 
+     * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy.
      * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
      * @notice The effect of the attack depends on the offchain state of the attacker and the game.
-     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used. 
-     * @param _targetAddress the address in the targetChain to attack. 
-     * @param _targetChain the chainId of the chain where the attack is to be performed. 
-     * @param _strategy a uint32 specifying the attack strategy. 
+     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used.
+     * @param _targetAddress the address in the targetChain to attack.
+     * @param _targetChain the chainId of the chain where the attack is to be performed.
+     * @param _strategy a uint32 specifying the attack strategy.
      * @param _attacker The user on whose behalf the sender is attempting to perform the action.
      */
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) external;
+    function attackOnBehalfOf(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy,
+        address _attacker
+    ) external;
 
     /**
      * @notice Votes for the homeChain of the sender to perform the provided chain action during
@@ -141,7 +160,10 @@ interface IBattleOfChains {
      * @param _chainAction The desired action to be performed by the chain of the sender in the current period
      * @param _comment An optional string providing arguments for the proposed action
      */
-    function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) external;
+    function proposeChainAction(
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) external;
 
     /**
      * @notice Tries to perform proposeChainAction on behalf of the provided user address.
@@ -153,7 +175,11 @@ interface IBattleOfChains {
      * @param _chainAction The desired action to be performed by the chain of the provided user in the current period
      * @param _comment An optional string providing arguments for the proposed action
      */
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) external;
+    function proposeChainActionOnBehalfOf(
+        address _user,
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) external;
 
     /**
      * @notice Returns true if the provided chainAction is formally correct
@@ -181,5 +207,4 @@ interface IBattleOfChains {
      * @param _user the address of the user
      */
     function hasHomeChain(address _user) external returns (bool);
-
 }
