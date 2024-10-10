@@ -18,7 +18,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // test a supportedContractManager
 // add daily chain action
 // consider using structs instead of separate variables
-// think of emitting addresses instead of (x,y)
 // think of attacking a particular place
 // calldata vs memory in all functions
 // review != 0 in favour of just variable
@@ -88,27 +87,15 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         _y = uint256(user160 & ((1 << 80) - 1));
     }
 
-    function attack(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) public {
-        _attack(_tokenIds, _x, _y, msg.sender, _targetChain, _strategy);
+    function attack(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy) public {
+        _attack(_tokenIds, _targetAddress, msg.sender, _targetChain, _strategy);
     }
 
-    function attack(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy) public {
-        (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        _attack(_tokenIds, _x, _y, msg.sender, _targetChain, _strategy);
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) public {
+        _attack(_tokenIds, _targetAddress, _attacker, _targetChain, _strategy);
     }
 
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _attacker) public {
-        _attack(_tokenIds, _x, _y, _attacker, _targetChain, _strategy);
+    function _attack(uint256[] calldata tokenIds, address _targetAddress, address _attacker, uint32 _targetChain, uint32 _strategy) private {
+        emit Attack(tokenIds, _targetAddress, msg.sender, _attacker, _targetChain, _strategy);
     }
-
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy, address _attacker) public {
-        (uint256 _x, uint256 _y) = coordinatesOf(targetUser);
-        _attack(_tokenIds, _x, _y, _attacker, _targetChain, _strategy);
-    }
-
-    function _attack(uint256[] calldata tokenIds, uint256 _x, uint256 _y, address _attacker, uint32 _targetChain, uint32 _strategy) private {
-        emit Attack(tokenIds, _x, _y, msg.sender, _attacker, _targetChain, _strategy);
-    }
-
-
 }

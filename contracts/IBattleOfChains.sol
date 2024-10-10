@@ -42,8 +42,7 @@ interface IBattleOfChains {
 
     event Attack(
         uint256[] _tokenIds,
-        uint256 _x,
-        uint256 _y,
+        address _targetAddress,
         address indexed _operator,
         address indexed _attacker,
         uint32 indexed _targetChain,
@@ -66,14 +65,8 @@ interface IBattleOfChains {
 
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
-    // remove x,y and leave only attacks to addresses
-    function attack(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy) external;
+    function attack(uint256[] calldata _tokenIds, address targetAddress, uint32 _targetChain, uint32 _strategy) external;
 
-    // tarketUser --> targetAddress
-    function attack(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy) external;
-
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, uint256 _x, uint256 _y, uint32 _targetChain, uint32 _strategy, address _attacker) external;
-
-    function attackOnBehalfOf(uint256[] calldata _tokenIds, address targetUser, uint32 _targetChain, uint32 _strategy, address _attacker) external;
+    function attackOnBehalfOf(uint256[] calldata _tokenIds, address targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) external;
 
 }
