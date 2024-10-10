@@ -189,10 +189,10 @@ interface IBattleOfChains {
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) external pure returns (bool _isOK);
 
     /**
-     * @notice Returns the user that executed the multichain corresponding to the provided tokenId.
+     * @notice Returns the user that executed the multichain mint corresponding to the provided tokenId.
      * @notice Note that NFTs minted on different chains may have been traded and may be owned by other players.
      * @param _tokenId the tokenId of the multichain mint
-     * @return _creator the address of the user that executed the multichain
+     * @return _creator the address of the user that executed the multichain mint
      */
     function creatorFromTokenId(uint256 _tokenId) external pure returns(address _creator);
 
