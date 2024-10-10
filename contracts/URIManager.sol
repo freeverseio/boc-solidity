@@ -9,21 +9,21 @@ import "./IURIManager.sol";
  */
 
 contract URIManager is IURIManager {
-
     // The address authorized to manage this contract's URIs
     address public uriManager;
 
     // The map of on-chain assignments of a URI to each token type
     mapping(uint32 => string) public tokenURIOfType;
 
-    // The URI to be used when querying about a token type 
+    // The URI to be used when querying about a token type
     // for which no on-chain assignment exists
     string public missingTypeURI;
 
-    modifier onlyURIManager {
+    modifier onlyURIManager() {
         if (msg.sender != uriManager) revert SenderIsNotURIManager();
         _;
     }
+
     constructor() {
         uriManager = msg.sender;
     }
@@ -34,9 +34,12 @@ contract URIManager is IURIManager {
     }
 
     /// @inheritdoc IURIManager
-    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) public onlyURIManager {
+    function setTokenURIs(
+        uint32[] memory _types,
+        string[] memory _tokenURIs
+    ) public onlyURIManager {
         if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
-        for (uint256 i = 0; i <_types.length; i++) {
+        for (uint256 i = 0; i < _types.length; i++) {
             tokenURIOfType[_types[i]] = _tokenURIs[i];
         }
     }
@@ -51,5 +54,4 @@ contract URIManager is IURIManager {
         _uri = tokenURIOfType[_type];
         return bytes(_uri).length == 0 ? missingTypeURI : _uri;
     }
-
 }

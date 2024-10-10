@@ -7,7 +7,6 @@ pragma solidity >=0.8.27;
  */
 
 interface IURIManager {
-
     error SenderIsNotURIManager();
     error IncorrectArrayLengths();
 
@@ -23,7 +22,10 @@ interface IURIManager {
      * @param _types the ordered array containing the token types
      * @param _tokenURIs the ordered array containing the tokenURIOfType
      */
-    function setTokenURIs(uint32[] memory _types, string[] memory _tokenURIs) external;
+    function setTokenURIs(
+        uint32[] memory _types,
+        string[] memory _tokenURIs
+    ) external;
 
     /**
      * @notice Sets the tokenURI to be returned when querying about token types
