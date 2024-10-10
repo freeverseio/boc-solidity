@@ -2,13 +2,13 @@
 pragma solidity >=0.8.27;
 
 import "./IEvolutionCollection.sol";
+import "./IBattleOfChains.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Battle of Chains
 /// @author LAOS Team and Freeverse
 
 // TODOS:
-// use latest compiler in header
 // separate interface
 // rething naming everywhere
 // estimate costs, and balance order of params, and number of params emitted
@@ -22,22 +22,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // review != 0 in favour of just variable
 // consider need for actionHash if we don't have supportHash
 
-contract BattleOfChains is Ownable {
-
-    struct Contract {
-        uint32 chain;
-        address contractAddress;
-        string observations;
-    }
-
-    enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
-    enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
-
-    struct ChainAction {
-        ChainActionType actionType;
-        Attack_Area attackArea;
-        address attackAddress;
-    }
+contract BattleOfChains is Ownable, IBattleOfChains {
 
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOfUser;
@@ -47,44 +32,6 @@ contract BattleOfChains is Ownable {
     address public supportedContractsManager;
     
     Contract[] public supportedContracts;
-
-    error HomeChainMustBeGreaterThanZero();
-    error UserAlreadyJoinedChain(address _user, uint32 _chain);
-    error UserHasNotJoinedChainYet(address _user);
-    error IncorrectArrayLengths();
-    error SenderIsNotURIManager();
-    error SenderIsNotSupportedContractsManager();
-    error IncorrectAttackInput();
-    error AttackAddressCannotBeEmpty();
-
-    event ChainActionProposal(
-        address indexed _operator,
-        address indexed _user,
-        ChainAction _action,
-        bytes32 _actionHash
-    );
-
-    event MultichainMint(
-        uint256 _tokenId,
-        address indexed _user, 
-        uint32 indexed _type,
-        uint32 indexed _homeChain
-    );
-
-    event JoinedChain(
-        address indexed _user, 
-        uint32 indexed _homeChain
-    );
-
-    event Attack(
-        uint256[] _tokenIds,
-        uint256 _x,
-        uint256 _y,
-        address indexed _operator,
-        address indexed _attacker,
-        uint32 indexed _targetChain,
-        uint32 _strategy
-    );
 
     modifier onlyURIManager {
         if (msg.sender != uriManager) revert SenderIsNotURIManager();
