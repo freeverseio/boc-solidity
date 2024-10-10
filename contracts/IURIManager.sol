@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity >=0.8.27;
 
-/// @title Interface to contract that manages URIs
-/// @author LAOS Team and Freeverse
+/**
+ * @title Interface to contract that manages URIs
+ * @notice Developed and maintained by the LAOS Team and Freeverse.
+ */
 
 interface IURIManager {
 

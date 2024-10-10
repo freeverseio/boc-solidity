@@ -3,8 +3,10 @@ pragma solidity >=0.8.27;
 
 import "./IURIManager.sol";
 
-/// @title Contract that manages URIs
-/// @author LAOS Team and Freeverse
+/**
+ * @title Contract that manages URIs
+ * @notice Developed and maintained by the LAOS Team and Freeverse.
+ */
 
 contract URIManager is IURIManager {
 
