@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity >=0.8.27;
+
 /**
  * @title Interface to contract that manages the set of supported contracts
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
 interface ISupportedContractsManager {
-
     /**
      * @dev Represents a supported contract, detailing the chain ID and address of deploy,
-     * as well as an optional description of the contract 
+     * as well as an optional description of the contract
      */
     struct Contract {
         uint32 chain;
@@ -31,7 +31,11 @@ interface ISupportedContractsManager {
      * @param _contractAddress the address of the deployed contract
      * @param _observations opntional description of the supported contract
      */
-    function addSupportedContract(uint32 _chain, address _contractAddress, string calldata _observations) external;
+    function addSupportedContract(
+        uint32 _chain,
+        address _contractAddress,
+        string calldata _observations
+    ) external;
 
     /**
      * @notice Returns all currently supported contracts
