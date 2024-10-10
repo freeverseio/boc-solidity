@@ -1,16 +1,28 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity >=0.8.27;
 
-/// @title Interface for Battle of Chains
-/// @author LAOS Team and Freeverse
+/**
+ * @title IBattleOfChains Interface
+ * @dev Interface for the Battle of Chains contract, which defines
+ * the structure and functions required for implementing the Battle of Chains logic.
+ * This interface outlines the core functionalities for managing user actions, 
+ * cross-chain interactions, and NFT minting in a game environment.
+ * It is intended to be implemented by contracts that manage game logic and interactions.
+ * @notice Developed and maintained by the LAOS Team and Freeverse.
+ */
 
 interface IBattleOfChains {
 
-    // The possible set of chain actions:
+    /**
+     * @dev The set of possible chain actions:
+     */
     enum ChainActionType{ DEFEND, IMPROVE, ATTACK_AREA, ATTACK_ADDRESS }
 
-    // The possible set of attack areas used in actions of type ATTACK_AREA
-    // The ATTACK_AREA must be NULL unless the desired action type is ATTACK_AREA
+    /**
+     * @dev 
+     * The set of possible attack areas used in actions of type ATTACK_AREA
+     * If the desired action is not of type ATTACK_AREA, then Attac_Area must be set to NULL
+    */
     enum Attack_Area{ NULL, NORTH, SOUTH, EAST, WEST, ALL }
 
     /**
@@ -89,12 +101,6 @@ interface IBattleOfChains {
     function joinChain(uint32 _homeChain) external;
 
     /**
-     * @notice Returns true if the provided user has previously joined a chain
-     * @param _user the address of the user
-     */
-    function hasHomeChain(address _user) external returns (bool);
-
-    /**
      * @notice Mints NFTs across all supported chains of the provided _type
      * @notice The attributes of the minted NFT depend on the current state of the user and the game
      * @param _type A uint32 specifying the desired type of minted NFTs 
@@ -103,28 +109,8 @@ interface IBattleOfChains {
     function multichainMint(uint32 _type) external returns (uint256 _tokenId);
 
     /**
-     * @notice Votes for the homeChain of the sender to perform the provided chain action during
-     * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
-     * @param _chainAction The desired action to be performed by the chain of the sender in the current period
-     * @param _comment An optional string providing arguments for the proposed action
-     */
-    function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) external;
-
-    /**
-     * @notice Tries to perform proposeChainAction on behalf of the provided user address.
-     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
-     * @notice transaction sender as operator.
-     * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
-     * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
-     * @param _user The user on whose behalf the sender is attempting to perform the action.
-     * @param _chainAction The desired action to be performed by the chain of the provided user in the current period
-     * @param _comment An optional string providing arguments for the proposed action
-     */
-    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) external;
-
-    /**
      * @notice Executes an attack on the specified target chain, at the specified targetAddress, using the sender's assets in the target chain
-     * @notice as specified by _tokenIds, with the provided attack strategy.
+     * @notice specified by _tokenIds, using the provided attack strategy.
      * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
      * @notice The effect of the attack depends on the offchain state of the user and the game.
      * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used. 
@@ -150,6 +136,26 @@ interface IBattleOfChains {
     function attackOnBehalfOf(uint256[] calldata _tokenIds, address _targetAddress, uint32 _targetChain, uint32 _strategy, address _attacker) external;
 
     /**
+     * @notice Votes for the homeChain of the sender to perform the provided chain action during
+     * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
+     * @param _chainAction The desired action to be performed by the chain of the sender in the current period
+     * @param _comment An optional string providing arguments for the proposed action
+     */
+    function proposeChainAction(ChainAction calldata _chainAction, string calldata _comment) external;
+
+    /**
+     * @notice Tries to perform proposeChainAction on behalf of the provided user address.
+     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
+     * @notice transaction sender as operator.
+     * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
+     * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
+     * @param _user The user on whose behalf the sender is attempting to perform the action.
+     * @param _chainAction The desired action to be performed by the chain of the provided user in the current period
+     * @param _comment An optional string providing arguments for the proposed action
+     */
+    function proposeChainActionOnBehalfOf(address _user, ChainAction calldata _chainAction, string calldata _comment) external;
+
+    /**
      * @notice Returns true if the provided chainAction is formally correct
      * @param _chainAction the desired action to be performed by the chain of the provided user in the current period
      * @return _isOK true if the provided chainAction is formally correct
@@ -170,5 +176,10 @@ interface IBattleOfChains {
      */
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
+    /**
+     * @notice Returns true if the provided user has previously joined a chain
+     * @param _user the address of the user
+     */
+    function hasHomeChain(address _user) external returns (bool);
 
 }
