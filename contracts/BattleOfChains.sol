@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * TODOS:
  * - rething naming everywhere
  * - estimate costs, and balance order of params, and number of params emitted
+ * - linters
  */
 
 
