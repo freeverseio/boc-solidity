@@ -10,7 +10,6 @@ import "./IBattleOfChains721.sol";
  */
 
 contract BattleOfChains721 is ERC721Universal, IBattleOfChains721 {
-
     constructor(
         address owner_,
         string memory baseURI_
@@ -20,5 +19,4 @@ contract BattleOfChains721 is ERC721Universal, IBattleOfChains721 {
     function assignOperator(address _operator) public {
         emit AssignOperator(msg.sender, _operator);
     }
-
 }
