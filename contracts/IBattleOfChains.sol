@@ -25,9 +25,9 @@ interface IBattleOfChains {
     /**
      * @dev
      * The set of possible attack areas used in actions of type ATTACK_AREA
-     * If the desired action is not of type ATTACK_AREA, then Attac_Area must be set to NULL
+     * If the desired action is not of type ATTACK_AREA, then AttackArea must be set to NULL
      */
-    enum Attack_Area {
+    enum AttackArea {
         NULL,
         NORTH,
         SOUTH,
@@ -44,7 +44,7 @@ interface IBattleOfChains {
     struct ChainAction {
         uint32 targetChain;
         ChainActionType actionType;
-        Attack_Area attackArea;
+        AttackArea attackArea;
         address attackAddress;
     }
 
@@ -137,7 +137,7 @@ interface IBattleOfChains {
     /**
      * @notice Tries to perform an attack on behalf of the provided attacker address.
      * @notice The effect is disregarded off-chain unless the user has authorized the transaction sender as an operator
-     * @notice If not disregarded, it executes an attack on the provideed target chain, at the provided targetAddress, with the assets
+     * @notice If not disregarded, it executes an attack on the provided target chain, at the provided targetAddress, with the assets
      * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy.
      * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
      * @notice The effect of the attack depends on the offchain state of the attacker and the game.
@@ -183,6 +183,12 @@ interface IBattleOfChains {
     ) external;
 
     /**
+     * @notice Returns true if the provided user has previously joined a chain
+     * @param _user the address of the user
+     */
+    function hasHomeChain(address _user) external view returns (bool);
+
+    /**
      * @notice Returns true if the provided chainAction is formally correct
      * @param _chainAction the desired action to be performed by the chain of the provided user in the current period
      * @return _isOK true if the provided chainAction is formally correct
@@ -203,9 +209,4 @@ interface IBattleOfChains {
      */
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
-    /**
-     * @notice Returns true if the provided user has previously joined a chain
-     * @param _user the address of the user
-     */
-    function hasHomeChain(address _user) external returns (bool);
 }

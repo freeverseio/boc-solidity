@@ -115,7 +115,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     /// @inheritdoc IBattleOfChains
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
-        bool _isAttackAreaNull = _chainAction.attackArea == Attack_Area.NULL;
+        bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
         bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
             return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
