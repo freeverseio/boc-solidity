@@ -18,7 +18,7 @@ interface IURIManager {
 
     /**
      * @notice Sets the tokenURIOfType for the provided token types
-     * @dev Reverts unless the two provided arrays must have the same length
+     * @dev Reverts if the two provided arrays do not have the same length
      * @param _types the ordered array containing the token types
      * @param _tokenURIs the ordered array containing the tokenURIOfType
      */
@@ -35,7 +35,7 @@ interface IURIManager {
     function setMissingTypeURI(string calldata _tokenURI) external;
 
     /**
-     * @notice Returns the tokenURI of the provide token type. If no on-chain assignment
+     * @notice Returns the tokenURI of the provided token type. If no on-chain assignment
      * currently exists, it returns the default tokenURI.
      * @return _uri the tokenURI
      */
