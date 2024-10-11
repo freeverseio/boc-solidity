@@ -1,3 +1,5 @@
+require('dotenv').config();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 /**
  * Use this file to configure your truffle project. It's seeded with some
  * common settings for different networks and features like migrations,
@@ -79,7 +81,43 @@ module.exports = {
     //   from: <address>,        // Account to send transactions from (default: accounts[0])
     //   websocket: true         // Enable EventEmitter interface for web3 (default: false)
     // },
-    //
+    sigma: {
+      provider: new HDWalletProvider(
+        [
+          process.env.DEPLOYER_MNEMONIC,
+          process.env.SECOND_ACCOUNT_MNEMONIC
+        ],
+        "https://rpc.laossigma.laosfoundation.io"
+      ),
+      network_id: 62850,
+      gasPrice: 150000000000, // fast = 5000000000, slow = 1000000000
+      gas: 10000000, // sets the max gas
+      timeoutBlocks: 5000,  // # of blocks before a deployment times out  (minimum/default: 50)
+    },
+
+    mercury: {
+      provider: new HDWalletProvider(
+        [
+          process.env.DEPLOYER_MNEMONIC,
+          process.env.SECOND_ACCOUNT_MNEMONIC
+        ],
+        "https://rpc.laosmercury.gorengine.com"
+      ),
+      network_id: 6679,
+      gasPrice: 50000000000, // fast = 5000000000, slow = 1000000000
+      gas: 5000000, // sets the max gas
+      timeoutBlocks: 5000,  // # of blocks before a deployment times out  (minimum/default: 50)
+    },
+    // zombienet: {
+    //   provider: new HDWalletProvider(
+    //     process.env.DEPLOYER_MNEMONIC,
+    //     "http://127.0.0.1:9999"
+    //   ),
+    //   network_id: 667,
+    //   gasPrice: 5000000000, // fast = 5000000000, slow = 1000000000
+    //   networkCheckTimeout: 1000000,
+    //   timeoutBlocks: 5000,
+    // },
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
     // goerli: {
@@ -106,7 +144,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.26",      // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.20",      // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
