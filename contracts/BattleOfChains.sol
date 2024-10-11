@@ -42,7 +42,10 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         if (!isTypeDefined(_type)) revert TokenURIForTypeNotDefined(_type);
         uint32 _homeChain = homeChainOf[msg.sender];
         if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
-        return _multichainMint(_homeChain, _type);
+        uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
+        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, tokenURIForType[_type]);
+        emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
+        return _tokenId;
     }
 
     /// @inheritdoc IBattleOfChains
@@ -109,13 +112,6 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
         emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
-    }
-
-    function _multichainMint(uint32 _homeChain, uint256 _type) private returns (uint256 _tokenId) {
-        uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
-        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, tokenURIForType[_type]);
-        emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
-        return _tokenId;
     }
 
     /// @inheritdoc IBattleOfChains
