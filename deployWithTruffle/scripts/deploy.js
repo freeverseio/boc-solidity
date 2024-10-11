@@ -6,10 +6,16 @@ const maxGas = 10000000;
 
 module.exports = async (callback) => {
   try {
-    const [alice, bob] = await web3.eth.getAccounts();
+    // Alice must be the owner of the current precompile collection
+    const [alice] = await web3.eth.getAccounts();
+    console.log('Alice = ', alice);  
+    const aliceBalance = await web3.eth.getBalance(alice);
+    console.log('Alice\'s balance:', web3.utils.fromWei(aliceBalance, 'ether'), 'LAOS');
 
-    console.log('Querying Alice balance...');
-    return;
+    console.log('deploying BattleOfChains... assigned to collection ', assignedCollectionAddress);
+    const battle = await BattleOfChains.new(assignedCollectionAddress);
+    console.log('...deployed at ', battle.address);
+    
     callback();
   } catch (error) {
     console.log(error);
