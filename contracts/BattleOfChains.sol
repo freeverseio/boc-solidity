@@ -11,10 +11,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @title BattleOfChains Main Contract
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  * TODOS:
- * - Revert if type not allowed
- * - rething naming everywhere
+ * - rethink naming everywhere
  * - estimate costs, and balance order of params, and number of params emitted
- * - linters
  */
 
 
