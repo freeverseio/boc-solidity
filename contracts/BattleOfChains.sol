@@ -1,68 +1,149 @@
 // SPDX-License-Identifier: GPL-3.0-only
-pragma solidity >=0.8.3;
+pragma solidity >=0.8.27;
 
 import "./IEvolutionCollection.sol";
+import "./IBattleOfChains.sol";
+import "./URIManager.sol";
+import "./SupportedContractsManager.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-/// @title Battle of Chains
-/// @author LAOS Team and Freeverse
+/**
+ * @title BattleOfChains Main Contract
+ * @notice Developed and maintained by the LAOS Team and Freeverse.
+ * TODOS:
+ * - rethink naming everywhere
+ * - estimate costs, and balance order of params, and number of params emitted
+ */
 
-// TODOS:
-// add events
 
-contract BattleOfChains is Ownable {
+contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
-    address public laosCollectionAddress;
-    IEvolutionCollection private collectionContract = IEvolutionCollection(laosCollectionAddress);
+    uint32 private constant NULL_CHAIN = 0;
+    IEvolutionCollection public immutable collectionContract;
+    mapping(address user => uint32 homeChain) public homeChainOf;
 
     constructor(address _laosCollectionAddress) Ownable(msg.sender) {
-        laosCollectionAddress = _laosCollectionAddress;
+        collectionContract = IEvolutionCollection(_laosCollectionAddress);
     }
 
-    function mintTo(address _recipient, uint32 _joinedChainId) public returns (uint256 _tokenId) {
-        return _mintTo(_recipient, _joinedChainId);
+    /// @inheritdoc IBattleOfChains
+    function joinChain(uint32 _homeChain) public {
+        if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOf[msg.sender] != NULL_CHAIN)
+            revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
+        homeChainOf[msg.sender] = _homeChain;
+        emit JoinedChain(msg.sender, _homeChain);
     }
 
-    function mint(uint32 _joinedChainId) public returns (uint256 _tokenId) {
-        return _mintTo(msg.sender, _joinedChainId);
+    /// @inheritdoc IBattleOfChains
+    function multichainMint(uint256 _type) public returns (uint256 _tokenId) {
+        if (!isTypeDefined(_type)) revert TokenURIForTypeNotDefined(_type);
+        uint32 _homeChain = homeChainOf[msg.sender];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
+        uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
+        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, tokenURIForType[_type]);
+        emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
+        return _tokenId;
     }
 
-    function _mintTo(address _recipient, uint32 _joinedChainId) private returns (uint256 _tokenId) {
-        uint256 _random = generateRandom();
-        uint256 _type = generateType(_random);
-        uint96 _slot = generateSlot(_random, _type, _joinedChainId);
-        return collectionContract.mintWithExternalURI(_recipient, _slot, presetTokenURI(_type));
+    /// @inheritdoc IBattleOfChains
+    function attack(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy
+    ) public {
+        _attack(_tokenIds, _targetAddress, msg.sender, _targetChain, _strategy);
     }
 
-    function generateRandom() public view returns(uint256) {
-        return uint256(blockhash(block.number - 1));
+    /// @inheritdoc IBattleOfChains
+    function attackOnBehalfOf(
+        uint256[] calldata _tokenIds,
+        address _targetAddress,
+        uint32 _targetChain,
+        uint32 _strategy,
+        address _attacker
+    ) public {
+        _attack(_tokenIds, _targetAddress, _attacker, _targetChain, _strategy);
     }
 
-    // currently only the 1st two types are supported
-    function generateType(uint256 _random) public pure returns(uint256) {
-        return _random % 2;
+    /// @inheritdoc IBattleOfChains
+    function proposeChainAction(
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) public {
+        _proposeChainAction(msg.sender, _chainAction, _comment);
     }
 
-    function generateSlot(uint256 _random, uint256 _type, uint32 _joinedChainId) public pure returns (uint96 _slot) {
-        return uint96((_random << 35) | uint256(_joinedChainId) << 3 | _type);
+    /// @inheritdoc IBattleOfChains
+    function proposeChainActionOnBehalfOf(
+        address _user,
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) public {
+        _proposeChainAction(_user, _chainAction, _comment);
     }
 
-    function presetTokenURI(uint256 _type) public pure returns (string memory) {
-        if (_type == 0) return "ipfs://QmType0";
-        if (_type == 1) return "ipfs://QmType1";
-        // Revert with a custom error message if type is not supported
-        revert("Type not supported");
+    function _attack(
+        uint256[] calldata tokenIds,
+        address _targetAddress,
+        address _attacker,
+        uint32 _targetChain,
+        uint32 _strategy
+    ) private {
+        emit Attack(
+            tokenIds,
+            _targetAddress,
+            msg.sender,
+            _attacker,
+            _targetChain,
+            _strategy
+        );
     }
 
-    function typeFromTokenId(uint256 _tokenId) public pure returns(uint256) {
-        return (_tokenId >> 160) & 0x7;
+    function _proposeChainAction(
+        address _user,
+        ChainAction calldata _chainAction,
+        string calldata _comment
+    ) private {
+        uint32 _sourceChain = homeChainOf[_user];
+        if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
+        if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
+        emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
     }
 
-    function chainIdFromTokenId(uint256 _tokenId) public pure returns(uint256) {
-        return (_tokenId >> 163) & 0xFFFFFFFF;
+    /// @inheritdoc IBattleOfChains
+    function hasHomeChain(address _user) public view returns (bool) {
+        return homeChainOf[_user] != NULL_CHAIN;
     }
 
-    function creatorFromTokenId(uint256 _tokenId) public pure returns(address) {
+    /// @inheritdoc IBattleOfChains
+    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
+        bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
+        bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
+        bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
+        if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
+            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
+        }
+        if (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
+            return
+                !_isTargetChainNull &&
+                !_isAttackAddressNull &&
+                _isAttackAreaNull;
+        }
+        return _isTargetChainNull && _isAttackAddressNull && _isAttackAreaNull;
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function creatorFromTokenId(uint256 _tokenId) public pure returns(address _creator) {
         return address(uint160(_tokenId));
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function coordinatesOf(address _user) public pure returns (uint256 _x, uint256 _y) {
+        uint160 user160 = uint160(_user);
+
+        _x = uint256(user160 >> 80);
+        _y = uint256(user160 & ((1 << 80) - 1));
     }
 }
