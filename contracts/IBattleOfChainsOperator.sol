@@ -9,19 +9,19 @@ pragma solidity >=0.8.27;
 
 interface IBattleOfChainsOperator {
     /**
-     * @dev Emitted when a user joins a chain. The chain is specified by its chain ID
+     * @notice Emitted when a user assigns an operator.
+     * @param _from The user granting permission.
+     * @param _operator The address on the LAOS Network receiving the permission.
      */
     event AssignOperator(address indexed _from, address indexed _operator);
 
     /**
-     * @notice Grants permissions to the provide operator address on the LAOS Network to perform
-     * @notice game actions in the Battle of Chains game, such as attack, chain action proposals, etc.
-     * @notice Note that the entire 721 logic remains unaffectd by this assignment.
-     * @notice In particular, trading of all NFTs remains on-chain in this chain and contract.
-     * @notice The granted permission can be changed as many times as desired.
-     * @notice The granted permission can be revoked by simple calling this method with _operator = msg.sender.
-     * @dev This method needs not store any variable. It just emits the event, for offchain processing.
-     * @param _operator the address on the LAOS Network to which permission us granted
+     * @notice Grants permission to the specified operator address on the LAOS Network
+     * to perform game actions in the Battle of Chains, such as attacks and chain action proposals.
+     * @notice The ERC-721 logic remains unaffected, and all NFT trading continues on-chain.
+     * @notice Permissions can be updated anytime. They can be revoked by calling this method with _operator = msg.sender.
+     * @dev This method does not store any variables; it simply emits an event for off-chain processing.
+     * @param _operator The address on the LAOS Network to which permission is granted.
      */
     function assignOperator(address _operator) external;
 }
