@@ -2,12 +2,12 @@
 pragma solidity >=0.8.27;
 
 /**
- * @title IBattleOfChains721 Interface
+ * @title IBattleOfChainsOperator Interface
  * @dev Interface for the Battle of Chains contract for ownership chains
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
-interface IBattleOfChains721 {
+interface IBattleOfChainsOperator {
     /**
      * @dev Emitted when a user joins a chain. The chain is specified by its chain ID
      */
