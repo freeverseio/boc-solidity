@@ -39,6 +39,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
 
     /// @inheritdoc IBattleOfChains
     function multichainMint(uint256 _type) public returns (uint256 _tokenId) {
+        if (!isTypeDefined(_type)) revert TokenURIForTypeNotDefined(_type);
         uint32 _homeChain = homeChainOf[msg.sender];
         if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
         return _multichainMint(_homeChain, _type);

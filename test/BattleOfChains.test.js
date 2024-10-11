@@ -59,9 +59,15 @@ describe("BattleOfChains", function () {
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
   });
 
+  it("cannot mint a type not previously defined", async function () {
+    await expect(battleOfChains.multichainMint(type = 1))
+      .to.be.revertedWithCustomError(battleOfChains, "TokenURIForTypeNotDefined")
+      .withArgs(type);
+  });
 
   it("cannot mint without specifying homeChain nor joining previously", async function () {
-    await expect(battleOfChains.multichainMint(type = 3))
+    await battleOfChains.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    await expect(battleOfChains.multichainMint(type = 1))
       .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
       .withArgs(owner.address);
   });
