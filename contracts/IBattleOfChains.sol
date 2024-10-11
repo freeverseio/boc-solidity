@@ -68,7 +68,7 @@ interface IBattleOfChains {
     event MultichainMint(
         uint256 _tokenId,
         address indexed _user,
-        uint32 indexed _type,
+        uint256 indexed _type,
         uint32 indexed _homeChain
     );
 
@@ -114,7 +114,7 @@ interface IBattleOfChains {
      * @param _type A uint32 specifying the desired type of minted NFTs
      * @return _tokenId The tokenId that identifies the minted NFTs in the contracts on all supported chains
      */
-    function multichainMint(uint32 _type) external returns (uint256 _tokenId);
+    function multichainMint(uint256 _type) external returns (uint256 _tokenId);
 
     /**
      * @notice Executes an attack on the specified target chain, at the specified targetAddress, using the sender's assets in the target chain

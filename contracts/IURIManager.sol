@@ -9,6 +9,7 @@ pragma solidity >=0.8.27;
 interface IURIManager {
     error SenderIsNotURIManager();
     error IncorrectArrayLengths();
+    error TokenURIForTypeNotDefined(uint256 _type);
 
     /**
      * @notice Sets the address with permissions to manage the mapping between token type and tokenURI
@@ -17,28 +18,14 @@ interface IURIManager {
     function setURIManager(address _newManager) external;
 
     /**
-     * @notice Sets the tokenURIOfType for the provided token types
+     * @notice Adds the tokenURIForType for the provided token types
      * @dev Reverts if the two provided arrays do not have the same length
      * @param _types the ordered array containing the token types
-     * @param _tokenURIs the ordered array containing the tokenURIOfType
+     * @param _tokenURIs the ordered array containing the tokenURIForType
      */
-    function setTokenURIs(
+    function addTokenURIs(
         uint32[] memory _types,
         string[] memory _tokenURIs
     ) external;
-
-    /**
-     * @notice Sets the tokenURI to be returned when querying about token types
-     * for which no on-chain assignment exists
-     * @param _tokenURI the tokenURI
-     */
-    function setMissingTypeURI(string calldata _tokenURI) external;
-
-    /**
-     * @notice Returns the tokenURI of the provided token type. If no on-chain assignment
-     * currently exists, it returns the default tokenURI.
-     * @return _uri the tokenURI
-     */
-    function typeTokenURI(uint32 _type) external view returns (string memory _uri);
 
 }

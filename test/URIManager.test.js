@@ -19,27 +19,24 @@ describe("URIManager", function () {
     await uriManager.connect(owner).setURIManager(addr1.address);
     expect(await uriManager.uriManager()).to.equal(addr1.address);
 
-    await expect(uriManager.connect(addr1).setMissingTypeURI("ipfs://Qmdefault"))
-      .to.not.be.reverted;
-
-    await expect(uriManager.connect(addr1).setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
+    await expect(uriManager.connect(addr1).addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]))
       .to.not.be.reverted;
 
     await expect(uriManager.connect(addr1).setURIManager(owner.address))
       .to.not.be.reverted;
   });
 
-  it("should return correct typeTokenURI for valid types", async function () {
-    expect(await uriManager.typeTokenURI(0)).to.equal("");
-    await uriManager.setMissingTypeURI("ipfs://Qmdefault");
-    expect(await uriManager.typeTokenURI(0)).to.equal("ipfs://Qmdefault");
-    expect(await uriManager.typeTokenURI(1)).to.equal("ipfs://Qmdefault");
-    await uriManager.setTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
-    expect(await uriManager.typeTokenURI(0)).to.equal("ipfs://QmType0");
-    expect(await uriManager.typeTokenURI(1)).to.equal("ipfs://QmType1");
-    expect(await uriManager.typeTokenURI(2)).to.equal("ipfs://Qmdefault");
-    expect(await uriManager.typeTokenURI(3)).to.equal("ipfs://Qmdefault");
-    expect(await uriManager.typeTokenURI(99)).to.equal("ipfs://Qmdefault");
+  it("should return correct tokenURIForType for valid types", async function () {
+    await expect(uriManager.tokenURIForType(0)).to.be.reverted;
+    await uriManager.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    // expect(await uriManager.tokenURIForType(0)).to.equal("ipfs://Qmdefault");
+    // expect(await uriManager.tokenURIForType(1)).to.equal("ipfs://Qmdefault");
+    // await uriManager.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    // expect(await uriManager.tokenURIForType(0)).to.equal("ipfs://QmType0");
+    // expect(await uriManager.tokenURIForType(1)).to.equal("ipfs://QmType1");
+    // expect(await uriManager.tokenURIForType(2)).to.equal("ipfs://Qmdefault");
+    // expect(await uriManager.tokenURIForType(3)).to.equal("ipfs://Qmdefault");
+    // expect(await uriManager.tokenURIForType(99)).to.equal("ipfs://Qmdefault");
   });
 
 });

@@ -61,7 +61,7 @@ describe("BattleOfChains", function () {
 
 
   it("cannot mint without specifying homeChain nor joining previously", async function () {
-    await expect(battleOfChains["multichainMint(uint32)"](type = 3))
+    await expect(battleOfChains.multichainMint(type = 3))
       .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
       .withArgs(owner.address);
   });

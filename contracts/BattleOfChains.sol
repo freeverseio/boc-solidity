@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @title BattleOfChains Main Contract
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  * TODOS:
+ * - Revert if type not allowed
  * - rething naming everywhere
  * - estimate costs, and balance order of params, and number of params emitted
  * - linters
@@ -37,7 +38,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function multichainMint(uint32 _type) public returns (uint256 _tokenId) {
+    function multichainMint(uint256 _type) public returns (uint256 _tokenId) {
         uint32 _homeChain = homeChainOf[msg.sender];
         if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
         return _multichainMint(_homeChain, _type);
@@ -109,9 +110,9 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
     }
 
-    function _multichainMint(uint32 _homeChain, uint32 _type) private returns (uint256 _tokenId) {
+    function _multichainMint(uint32 _homeChain, uint256 _type) private returns (uint256 _tokenId) {
         uint96 _slot = uint96(uint256(blockhash(block.number - 1)));
-        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, typeTokenURI(_type));
+        _tokenId = collectionContract.mintWithExternalURI(msg.sender, _slot, tokenURIForType[_type]);
         emit MultichainMint(_tokenId, msg.sender, _type, _homeChain);
         return _tokenId;
     }
