@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity >=0.8.27;
 
+import './IBattleOfChainsOperator.sol';
+
 /**
  * @title IBattleOfChainsAlliance Interface
- * @dev A general alliance can be an arbitrarily complex contract
- * @dev It is strongly recommended that alliances implement the minimal logic
- * @dev that this interface contains: assigning operators on LAOS, and responding 
- * @dev to alliance name and alliance description.
+ * @dev A general alliance contract can be an arbitrarily complex contract
+ * @dev Battle of Chains recommendeds that alliances implement the minimal logic
+ * @dev that this interface contains, which allows the alliance to:
+ * @dev assign an operator on LAOS, responding to alliance name and alliance description.
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
-interface IBattleOfChainsAlliance {
+interface IBattleOfChainsAlliance is IBattleOfChainsOperator {
     /**
      * @notice Returns the name of the alliance
      * @param name the name of the alliance
