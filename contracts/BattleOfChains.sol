@@ -113,6 +113,11 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function hasHomeChain(address _user) public view returns (bool) {
+        return homeChainOf[_user] != NULL_CHAIN;
+    }
+
+    /// @inheritdoc IBattleOfChains
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
         bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
@@ -140,10 +145,5 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
 
         _x = uint256(user160 >> 80);
         _y = uint256(user160 & ((1 << 80) - 1));
-    }
-
-    /// @inheritdoc IBattleOfChains
-    function hasHomeChain(address _user) public view returns (bool) {
-        return homeChainOf[_user] != NULL_CHAIN;
     }
 }
