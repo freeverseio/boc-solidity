@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
 const BattleOfChains = artifacts.require("BattleOfChains");
 const EvolutionCollectionFactory = artifacts.require("EvolutionCollectionFactory");
-
-const assignedCollectionAddress = "0xfFFfFffffFffFFfFFffffffe000000000000000D";
+const EvolutionCollection = artifacts.require("EvolutionCollection");
 
 module.exports = async (callback) => {
   try {
@@ -13,14 +12,23 @@ module.exports = async (callback) => {
     console.log('Deployer\'s balance:', web3.utils.fromWei(aliceBalance, 'ether'), 'LAOS');
 
     console.log('Connecting to collection factory...');
-    const newcol = await EvolutionCollectionFactory.at("0x0000000000000000000000000000000000000403");
-    console.log('...DONE');
-      return;
+    const colectionFactory = await EvolutionCollectionFactory.at("0x0000000000000000000000000000000000000403");
+    console.log('Connecting to collection factory...DONE');
 
-    console.log('deploying BattleOfChains... assigned to collection ', assignedCollectionAddress);
-    const battle = await BattleOfChains.new(assignedCollectionAddress);
+    console.log('Creating new collection...');
+    const response = await colectionFactory.createCollection(deployer);
+    const newCollectionAddress = response.logs[0].args["_collectionAddress"];
+    console.log('Creating new collection... DONE at address: ', newCollectionAddress);
+    const precompileContract = await EvolutionCollection.at(newCollectionAddress);
+
+    console.log('deploying BattleOfChains... assigned to collection ', newCollectionAddress);
+    const battle = await BattleOfChains.new(newCollectionAddress);
     console.log('...DONE. Deployed at ', battle.address);
     
+    console.log('Setting precompile owner to BattleOfChains contract...');
+    await precompileContract.transferOwnership(battle.address);
+    console.log('Setting precompile owner to BattleOfChains contract...DONE');
+
     console.log('assigning tokenURI for type 0 and type 1 multimints...');
     await battle.addTokenURIs([0, 1], ["ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K", "ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K"]);
     console.log('...DONE');
