@@ -23,5 +23,11 @@ describe("BattleOfChains721", function () {
     expect(await battleOfChains.symbol()).to.equal(symbol);
   });
 
+
+  it("assignOperator emits expected event", async function () {
+    await expect(battleOfChains.assignOperator(addr1.address))
+      .to.emit(battleOfChains, "AssignOperator")
+      .withArgs(owner.address, addr1.address);
+  });
 });
 
