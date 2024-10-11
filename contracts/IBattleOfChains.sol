@@ -37,7 +37,7 @@ interface IBattleOfChains {
     }
 
     /**
-     * @dev Represents an action proposed by a user to its home chain
+     * @dev Represents an action proposed to / voted by a user to its home chain
      * Used as input to functions that require details about chain actions,
      * as well as to emitted events.
      */
