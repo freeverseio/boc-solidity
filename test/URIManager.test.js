@@ -27,8 +27,15 @@ describe("URIManager", function () {
   });
 
   it("should return correct tokenURIForType for valid types after addTokenURIs", async function () {
+    expect(await uriManager.isTypeDefined(0)).to.equal(false);
+    expect(await uriManager.nDefinedTypes()).to.equal(0);
+
     await expect(uriManager.tokenURIForType(0)).to.be.reverted;
     await uriManager.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    expect(await uriManager.nDefinedTypes()).to.equal(2);
+    expect(await uriManager.isTypeDefined(0)).to.equal(true);
+    expect(await uriManager.isTypeDefined(1)).to.equal(true);
+    expect(await uriManager.isTypeDefined(2)).to.equal(false);
     expect(await uriManager.tokenURIForType(0)).to.equal("ipfs://QmType0");
     expect(await uriManager.tokenURIForType(1)).to.equal("ipfs://QmType1");
     await expect(uriManager.tokenURIForType(2)).to.be.reverted;

@@ -31,7 +31,7 @@ contract URIManager is IURIManager {
 
     /// @inheritdoc IURIManager
     function addTokenURIs(
-        uint32[] memory _types,
+        uint256[] memory _types,
         string[] memory _tokenURIs
     ) public onlyURIManager {
         if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
@@ -39,4 +39,27 @@ contract URIManager is IURIManager {
             tokenURIForType.push(_tokenURIs[i]);
         }
     }
+
+    /// @inheritdoc IURIManager
+    function changeTokenURIs(
+        uint256[] memory _types,
+        string[] memory _tokenURIs
+    ) public onlyURIManager {
+        if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
+        for (uint256 i = 0; i < _types.length; i++) {
+            if (!isTypeDefined(_types[i])) revert TokenURIForTypeNotDefined(_types[i]);
+            tokenURIForType[_types[i]] = _tokenURIs[i];
+        }
+    }
+
+    /// @inheritdoc IURIManager
+    function nDefinedTypes() public view returns(uint256) {
+        return tokenURIForType.length;
+    }
+
+    /// @inheritdoc IURIManager
+    function isTypeDefined(uint256 _type) public view returns(bool) {
+        return _type < tokenURIForType.length;
+    }
+
 }

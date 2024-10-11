@@ -111,7 +111,7 @@ interface IBattleOfChains {
     /**
      * @notice Mints NFTs across all supported chains of the provided _type
      * @notice The attributes of the minted NFT depend on the current state of the user and the game
-     * @param _type A uint32 specifying the desired type of minted NFTs
+     * @param _type An integer specifying the desired type of minted NFTs
      * @return _tokenId The tokenId that identifies the minted NFTs in the contracts on all supported chains
      */
     function multichainMint(uint256 _type) external returns (uint256 _tokenId);
