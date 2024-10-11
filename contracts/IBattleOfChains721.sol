@@ -20,6 +20,7 @@ interface IBattleOfChains721 {
      * @notice In particular, trading of all NFTs remains on-chain in this chain and contract.
      * @notice The granted permission can be changed as many times as desired.
      * @notice The granted permission can be revoked by simple calling this method with _operator = msg.sender.
+     * @dev This method needs not store any variable. It just emits the event, for offchain processing.
      * @param _operator the address on the LAOS Network to which permission us granted
      */
     function assignOperator(address _operator) external;
