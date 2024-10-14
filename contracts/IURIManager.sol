@@ -18,13 +18,11 @@ interface IURIManager {
     function setURIManager(address _newManager) external;
 
     /**
-     * @notice Adds the provided tokenURIs to the provided token types
-     * @dev Reverts if the two provided arrays do not have the same length
-     * @param _types the ordered array containing the token types
+     * @notice Adds the provided tokenURIs to the list of supported types
+     * @dev Assigns types to provide URIs incrementally from last supported type
      * @param _tokenURIs the ordered array containing the tokenURIs
      */
     function addTokenURIs(
-        uint256[] memory _types,
         string[] memory _tokenURIs
     ) external;
 

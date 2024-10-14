@@ -31,11 +31,9 @@ contract URIManager is IURIManager {
 
     /// @inheritdoc IURIManager
     function addTokenURIs(
-        uint256[] memory _types,
         string[] memory _tokenURIs
     ) public onlyURIManager {
-        if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
-        for (uint256 i = 0; i < _types.length; i++) {
+        for (uint256 i = 0; i < _tokenURIs.length; i++) {
             tokenURIForType.push(_tokenURIs[i]);
         }
     }

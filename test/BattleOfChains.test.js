@@ -70,7 +70,7 @@ describe("BattleOfChains", function () {
   });
 
   it("cannot mint without specifying homeChain nor joining previously", async function () {
-    await battleOfChains.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    await battleOfChains.addTokenURIs(["ipfs://QmType0", "ipfs://QmType1"]);
     await expect(battleOfChains.multichainMint(type = 1))
       .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
       .withArgs(owner.address);
@@ -89,7 +89,7 @@ describe("BattleOfChains", function () {
 
   it("MultichainMintTest succeeds on correct inputs", async function () {
     const eventMintTopic0 = "0xb189b714f887ae698b140ddf7c6e07d5df979975e4675f19700ad7149a2e1ca3";
-    await battleOfChains.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    await battleOfChains.addTokenURIs(["ipfs://QmType0", "ipfs://QmType1"]);
     await battleOfChains.joinChain(homeChain = 1);
     const tx = await battleOfChains.multichainMintTest(type = 1); 
     await expect(tx)
