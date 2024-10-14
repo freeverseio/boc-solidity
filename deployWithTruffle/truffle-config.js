@@ -101,12 +101,12 @@ module.exports = {
           process.env.DEPLOYER_MNEMONIC,
           process.env.SECOND_ACCOUNT_MNEMONIC
         ],
-        "https://laos-rpc.dwellir.com"  // https://laos-rpc.dwellir.com https://rpc.laos.laosfoundation.io
+        "https://rpc.laos.laosfoundation.io"  // https://laos-rpc.dwellir.com https://rpc.laos.laosfoundation.io
       ),
       network_id: 6283,
       gasPrice: 150000000000, // fast = 5000000000, slow = 1000000000
       gas: 10000000, // sets the max gas
-      timeoutBlocks: 5000,  // # of blocks before a deployment times out  (minimum/default: 50)
+      // timeoutBlocks: 5000,  // # of blocks before a deployment times out  (minimum/default: 50)
     },
 
     mercury: {
@@ -158,7 +158,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.8.26",      // Fetch exact version from solc-bin (default: truffle's version)
+      version: "0.8.20",      // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {

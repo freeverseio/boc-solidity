@@ -30,23 +30,11 @@ module.exports = async (callback) => {
     console.log('Setting precompile owner to BattleOfChains contract...DONE');
 
     console.log('assigning tokenURI for type 0 and type 1 multimints...');
-    await battle.addTokenURIs([0, 1], ["ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K", "ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K"]);
+    await battle.addTokenURIs(["ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K", "ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K"]);
     console.log('...DONE');
 
     console.log('Is owner of precompile the battleOfChains contract?', battle.address === await precompileContract.owner());
     console.log('....', battle.address, await precompileContract.owner());
-
-    // Activate these lines only if a mint test is required
-    if (false) {
-      console.log('user joinChain')
-      await battle.joinChain(1);
-      console.log('user joinChain... DONE')
-  
-      console.log('user mints')
-      await battle.multichainMint(0);
-      console.log('user mints...DONE')
-    }
-
 
     callback();
   } catch (error) {

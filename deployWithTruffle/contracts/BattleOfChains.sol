@@ -139,7 +139,7 @@ abstract contract Ownable is Context {
 // File contracts/IBattleOfChains.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title IBattleOfChains Interface
@@ -355,7 +355,7 @@ interface IBattleOfChains {
 // File contracts/IEvolutionCollection.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /// @title Pallet Laos Evolution Interface
 /// @author LAOS Team
@@ -444,7 +444,7 @@ interface IEvolutionCollection {
 // File contracts/ISupportedContractsManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Interface to contract that manages the set of supported contracts
@@ -494,7 +494,7 @@ interface ISupportedContractsManager {
 // File contracts/SupportedContractsManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title  Contract that manages the set of supported contracts
@@ -550,7 +550,7 @@ contract SupportedContractsManager is ISupportedContractsManager {
 // File contracts/IURIManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Interface to contract that manages URIs
@@ -569,13 +569,11 @@ interface IURIManager {
     function setURIManager(address _newManager) external;
 
     /**
-     * @notice Adds the provided tokenURIs to the provided token types
-     * @dev Reverts if the two provided arrays do not have the same length
-     * @param _types the ordered array containing the token types
+     * @notice Adds the provided tokenURIs to the list of supported types
+     * @dev Assigns types to provide URIs incrementally from last supported type
      * @param _tokenURIs the ordered array containing the tokenURIs
      */
     function addTokenURIs(
-        uint256[] memory _types,
         string[] memory _tokenURIs
     ) external;
 
@@ -608,7 +606,7 @@ interface IURIManager {
 // File contracts/URIManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Contract that manages URIs
@@ -638,11 +636,9 @@ contract URIManager is IURIManager {
 
     /// @inheritdoc IURIManager
     function addTokenURIs(
-        uint256[] memory _types,
         string[] memory _tokenURIs
     ) public onlyURIManager {
-        if (_types.length != _tokenURIs.length) revert IncorrectArrayLengths();
-        for (uint256 i = 0; i < _types.length; i++) {
+        for (uint256 i = 0; i < _tokenURIs.length; i++) {
             tokenURIForType.push(_tokenURIs[i]);
         }
     }
@@ -675,7 +671,7 @@ contract URIManager is IURIManager {
 // File contracts/BattleOfChains.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 
 
