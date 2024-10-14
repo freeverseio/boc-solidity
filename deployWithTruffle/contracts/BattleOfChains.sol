@@ -139,7 +139,7 @@ abstract contract Ownable is Context {
 // File contracts/IBattleOfChains.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title IBattleOfChains Interface
@@ -355,7 +355,7 @@ interface IBattleOfChains {
 // File contracts/IEvolutionCollection.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /// @title Pallet Laos Evolution Interface
 /// @author LAOS Team
@@ -444,7 +444,7 @@ interface IEvolutionCollection {
 // File contracts/ISupportedContractsManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Interface to contract that manages the set of supported contracts
@@ -494,7 +494,7 @@ interface ISupportedContractsManager {
 // File contracts/SupportedContractsManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title  Contract that manages the set of supported contracts
@@ -550,7 +550,7 @@ contract SupportedContractsManager is ISupportedContractsManager {
 // File contracts/IURIManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Interface to contract that manages URIs
@@ -608,7 +608,7 @@ interface IURIManager {
 // File contracts/URIManager.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 /**
  * @title Contract that manages URIs
@@ -675,7 +675,7 @@ contract URIManager is IURIManager {
 // File contracts/BattleOfChains.sol
 
 // Original license: SPDX_License_Identifier: GPL-3.0-only
-pragma solidity >=0.8.26;
+pragma solidity >=0.8.20;
 
 
 
