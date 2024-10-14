@@ -4,6 +4,6 @@ echo "Flatening..."
 npx hardhat flatten ./contracts/BattleOfChains.sol > ./deployWithTruffle/contracts/BattleOfChains.sol 
 echo "...DONE"
 echo "Deploying with truffle..."
-(cd deployWithTruffle && ./node_modules/.bin/truffle exec scripts/deploy.js --network sigma)
+(cd deployWithTruffle && ./node_modules/.bin/truffle exec scripts/deploy.js --network laos)
 echo "...DONE"
 
