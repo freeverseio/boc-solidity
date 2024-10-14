@@ -6,4 +6,8 @@ import "../BattleOfChains.sol";
 contract BattleOfChainsTest is BattleOfChains {
 
     constructor(address _laosCollectionAddress) BattleOfChains(_laosCollectionAddress) {}
+
+    function emitMultichainEvent(uint256 _tokenId, address _user, uint256 _type, uint32 _homeChain) public {
+        emit MultichainMint(_tokenId, _user, _type, _homeChain);
+    }
 }

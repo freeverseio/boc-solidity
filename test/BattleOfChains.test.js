@@ -49,9 +49,13 @@ describe("BattleOfChains", function () {
   });
 
   it("joining emits the expected event", async function () {
-    await expect(battleOfChains.connect(owner).joinChain(homechain = 3))
+    const eventJoinchainTopic0 = "0xe5aebc7f1c41608f76f140ef2fd9c4ecca92aab57ac189ced3f7414a5d65957b";
+    const tx = await battleOfChains.connect(owner).joinChain(homechain = 3);
+    await expect(tx)
       .to.emit(battleOfChains, "JoinedChain")
       .withArgs(owner.address, homechain);
+    const receipt = await tx.wait();
+      expect(receipt.logs[0].topics[0]).to.equal(eventJoinchainTopic0);
   });
 
   it("user cannot join null chain", async function () {
@@ -72,6 +76,17 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address);
   });
 
+  it("MultichainMint produces expected event", async function () {
+    const eventMintTopic0 = "0xb189b714f887ae698b140ddf7c6e07d5df979975e4675f19700ad7149a2e1ca3";
+    const tx = await battleOfChains.emitMultichainEvent(tokenId = '123', user = addr1.address, type = 1, homeChain = 232); 
+    await expect(tx)
+      .to.emit(battleOfChains, "MultichainMint")
+      .withArgs(tokenId, user, type, homeChain);
+
+    const receipt = await tx.wait();
+    expect(receipt.logs[0].topics[0]).to.equal(eventMintTopic0);
+  });
+
   it("getCoordinates works as expected", async function () {
     let coordinates;
     coordinates = await battleOfChains.coordinatesOf('0x1111111111111111111100000000000000000000');
@@ -84,13 +99,16 @@ describe("BattleOfChains", function () {
   });
 
   it("attack address emits expected event", async function () {
+    const eventAttackTopic0 = "0x275ad433213dc8c15bff507f1e7f3758b0b460a5d55a44411ed2d816d90dfdc4";
     const tokenIds = [1, 2];
     const user = '0x1111111111111111111100000000000000000000';
-    await expect(
-      battleOfChains.connect(owner)["attack(uint256[],address,uint32,uint32)"](tokenIds, user, targetChain = 3, strategy = 52)
-    )
+    const tx = await battleOfChains.connect(owner)["attack(uint256[],address,uint32,uint32)"](tokenIds, user, targetChain = 3, strategy = 52);
+    await expect(tx)
       .to.emit(battleOfChains, "Attack")
       .withArgs(tokenIds, user, owner.address, owner.address, targetChain, strategy);
+
+    const receipt = await tx.wait();
+    expect(receipt.logs[0].topics[0]).to.equal(eventAttackTopic0);
   });
 
   it("attack address emits expected event", async function () {
@@ -364,6 +382,7 @@ describe("BattleOfChains", function () {
   });
 
   it("emits ChainActionProposal event when proposeChainAction is called", async function () {
+    const eventChainActionTopic0 = "0x8747b87ceb2b2f1164eca74f645e359271ec95927021b6ff6470b000a5693f03";
     await battleOfChains.joinChain(sourceChain = 32);
     const _targetChain = 0;
     const chainAction = {
@@ -385,6 +404,10 @@ describe("BattleOfChains", function () {
         [_targetChain, chainAction.actionType, chainAction.attackArea, chainAction.attackAddress],
         comment,
       );
+
+      const receipt = await tx.wait();
+      expect(receipt.logs[0].topics[0]).to.equal(eventChainActionTopic0);
+  
   });
 
   it("emits ChainActionProposal event when proposeChainActionOnBehalfOf is called", async function () {
