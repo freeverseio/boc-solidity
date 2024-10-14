@@ -87,6 +87,19 @@ describe("BattleOfChains", function () {
     expect(receipt.logs[0].topics[0]).to.equal(eventMintTopic0);
   });
 
+  it("MultichainMintTest succeeds on correct inputs", async function () {
+    const eventMintTopic0 = "0xb189b714f887ae698b140ddf7c6e07d5df979975e4675f19700ad7149a2e1ca3";
+    await battleOfChains.addTokenURIs([0, 1], ["ipfs://QmType0", "ipfs://QmType1"]);
+    await battleOfChains.joinChain(homeChain = 1);
+    const tx = await battleOfChains.multichainMintTest(type = 1); 
+    await expect(tx)
+      .to.emit(battleOfChains, "MultichainMint")
+      .withArgs("1234578123453234", owner.address, type, homeChain);
+
+    const receipt = await tx.wait();
+    expect(receipt.logs[0].topics[0]).to.equal(eventMintTopic0);
+  });
+
   it("getCoordinates works as expected", async function () {
     let coordinates;
     coordinates = await battleOfChains.coordinatesOf('0x1111111111111111111100000000000000000000');

@@ -36,18 +36,6 @@ module.exports = async (callback) => {
     console.log('Is owner of precompile the battleOfChains contract?', battle.address === await precompileContract.owner());
     console.log('....', battle.address, await precompileContract.owner());
 
-    // Activate these lines only if a mint test is required
-    if (false) {
-      console.log('user joinChain')
-      await battle.joinChain(1);
-      console.log('user joinChain... DONE')
-  
-      console.log('user mints')
-      await battle.multichainMint(0);
-      console.log('user mints...DONE')
-    }
-
-
     callback();
   } catch (error) {
     console.log(error);
