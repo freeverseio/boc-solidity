@@ -10,6 +10,7 @@ const privateKey =
     : '123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0';
 
 const POLYGONSCAN_KEY = process.env.POLYGONSCAN_KEY;
+const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY;
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -66,9 +67,14 @@ const config: HardhatUserConfig = {
     },
   },
 
+  sourcify: {
+    enabled: true
+  },
   etherscan: {
     apiKey: {
       polygon: POLYGONSCAN_KEY,
+      eth: ETHERSCAN_KEY,
+      mainnet: ETHERSCAN_KEY,
     },
   },
 };
