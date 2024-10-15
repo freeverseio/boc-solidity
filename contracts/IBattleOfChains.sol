@@ -102,6 +102,16 @@ interface IBattleOfChains {
     );
 
     /**
+     * @dev Emitted when a user attemps to upgrade an asset
+     */
+    event Upgrade(
+        address indexed _operator,
+        address indexed _user,
+        uint32 _chain,
+        uint256 _tokenId
+    );
+
+    /**
      * @notice Assigns the sender of the transaction to the specified chain. The assignment cannot be changed.
      * @dev Reverts if called more than once. ChainId = 0 is not allowed.
      * @param _homeChain the chainId of the chain to assign to the sender
@@ -181,6 +191,24 @@ interface IBattleOfChains {
         ChainAction calldata _chainAction,
         string calldata _comment
     ) external;
+
+    /**
+     * @notice Attempts to perform an upgrade on an asset owned by the sender of the transaction
+     * that resides in the provided chain
+     * @param _chain The chainId where the asset resides
+     * @param _tokenId The _tokenId of the asset
+     */
+    function upgrade(uint32 _chain, uint256 _tokenId) external;
+
+    /**
+     * @notice Attempts to upgrade an asset on behalf of the specified user address.
+     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
+     * @notice transaction sender as operator.
+     * @param _user The user on whose behalf the sender is attempting to perform the action.
+     * @param _chain The chainId where the asset resides
+     * @param _tokenId The _tokenId of the asset
+     */
+    function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) external;
 
     /**
      * @notice Returns true if the provided user has previously joined a chain

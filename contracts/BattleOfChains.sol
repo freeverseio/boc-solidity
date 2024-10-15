@@ -84,6 +84,16 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         _proposeChainAction(_user, _chainAction, _comment);
     }
 
+    /// @inheritdoc IBattleOfChains
+    function upgrade(uint32 _chain, uint256 _tokenId) public {
+        _upgrade(msg.sender, _chain, _tokenId);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) public {
+        _upgrade(_user, _chain, _tokenId);
+    }
+
     function _attack(
         uint256[] calldata tokenIds,
         address _targetAddress,
@@ -110,6 +120,10 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
         if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
         emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
+    }
+
+    function _upgrade(address _user, uint32 _chain, uint256 _tokenId) private {
+        emit Upgrade(msg.sender, _user, _chain, _tokenId);
     }
 
     /// @inheritdoc IBattleOfChains
