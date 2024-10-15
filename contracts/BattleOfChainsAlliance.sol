@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 pragma solidity >=0.8.20;
 
-import "./BattleOfChainsOperator.sol";
 import "./IBattleOfChainsAlliance.sol";
 
 /**
@@ -9,7 +8,9 @@ import "./IBattleOfChainsAlliance.sol";
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
-contract BattleOfChainsAlliance is BattleOfChainsOperator, IBattleOfChainsAlliance {
+contract BattleOfChainsAlliance is IBattleOfChainsAlliance {
+
+    address public immutable battleOfChains721Contract;
 
     /// @inheritdoc IBattleOfChainsAlliance
     string public allianceName;
@@ -19,9 +20,16 @@ contract BattleOfChainsAlliance is BattleOfChainsOperator, IBattleOfChainsAllian
 
     constructor(
         string memory _allianceName,
-        string memory _allianceDescription
+        string memory _allianceDescription,
+        address _battleOfChains721Contract
     ) {
         allianceName = _allianceName;
         allianceDescription = _allianceDescription;
+        battleOfChains721Contract = _battleOfChains721Contract;
+    }
+
+    /// @inheritdoc IBattleOfChainsOperator
+    function assignOperator(address _operator) public {
+        IBattleOfChainsOperator(battleOfChains721Contract).assignOperator(_operator);
     }
 }
