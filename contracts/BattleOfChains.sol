@@ -118,6 +118,11 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function tokenURI(uint256 _tokenId) public view returns (string memory _tokenURI) {
+        return collectionContract.tokenURI(_tokenId);
+    }
+
+    /// @inheritdoc IBattleOfChains
     function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
         bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
