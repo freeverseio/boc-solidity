@@ -209,4 +209,11 @@ interface IBattleOfChains {
      */
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
+    /**
+     * @notice Returns the tokenURI of the provided multichain-minted token
+     * @dev It internally calls the precompile collection contract
+     * @dev It reverts if the token has not been minted. 
+     * @param _tokenId the tokenId of the multichain mint
+     */
+    function tokenURI(uint256 _tokenId) external view returns (string memory);
 }
