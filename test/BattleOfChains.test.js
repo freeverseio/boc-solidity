@@ -447,5 +447,21 @@ describe("BattleOfChains", function () {
       );
   });
 
+  it("upgrade emits expected event", async function () {
+    await expect(
+      battleOfChains.upgrade(chain = 432, tokenId = 312312)
+    )
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, owner.address, chain, tokenId);
+  });
+
+  it("upgradeOnBehalfOf emits expected event", async function () {
+    await expect(
+      battleOfChains.upgradeOnBehalfOf(addr1.address, chain = 432, tokenId = 312312)
+    )
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, addr1.address, chain, tokenId);
+  });
+
 });
 

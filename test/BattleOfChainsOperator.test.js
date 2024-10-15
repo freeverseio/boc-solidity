@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
+ 
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { expect } = require("chai");
