@@ -72,5 +72,29 @@ describe("BattleOfChainsOperator", function () {
       .to.be.revertedWithCustomError(battleOfChains, "PercentageAbove100")
       .withArgs(1001);
   });
+
+  it("should accept ShareTreasury with one amount as the largest possible uint256", async function () {
+    const maxUint256 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+    const shareTXs = [
+        { recipient: addr1.address, amount: 0 },
+        { recipient: owner.address, amount: maxUint256 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryAbsolute(shareTXs))
+        .not.to.be.reverted;
+  });
+
+  it("does not revert even if sum overflows", async function () {
+    const maxUint256 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+    const shareTXs = [
+        { recipient: addr1.address, amount: maxUint256 },
+        { recipient: owner.address, amount: maxUint256 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryAbsolute(shareTXs))
+        .not.to.be.reverted;
+  });
 });
 
