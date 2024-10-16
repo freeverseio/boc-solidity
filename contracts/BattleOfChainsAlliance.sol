@@ -32,4 +32,14 @@ contract BattleOfChainsAlliance is IBattleOfChainsAlliance {
     function assignOperator(address _operator) public {
         IBattleOfChainsOperator(battleOfChains721Contract).assignOperator(_operator);
     }
+
+    /// @inheritdoc IBattleOfChainsOperator
+    function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) public  {
+        IBattleOfChainsOperator(battleOfChains721Contract).shareTreasuryAbsolute(_shareTXs);
+    }
+
+    /// @inheritdoc IBattleOfChainsOperator
+    function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) public {
+        IBattleOfChainsOperator(battleOfChains721Contract).shareTreasuryPercentage(_shareTXs);
+    }
 }
