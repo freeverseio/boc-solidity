@@ -29,9 +29,9 @@ contract BattleOfChainsOperator is IBattleOfChainsOperator {
     /// @inheritdoc IBattleOfChainsOperator
     function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) public {
         uint256 totalPercentage;
-        for (uint256 i = 0; i <= _shareTXs.length; i++) {
+        for (uint256 i = 0; i < _shareTXs.length; i++) {
             if (_shareTXs[i].amount > 1000) revert IndividualPercetageAbove100(_shareTXs[i].amount);
-            totalPercentage += totalPercentage;
+            totalPercentage += _shareTXs[i].amount;
         }
         if (totalPercentage > 1000) revert TotalPercetageAbove100(totalPercentage);
         emit ShareTreasury(msg.sender, TreasuryShareMethod.PERCENTAGE_BPS, _shareTXs);

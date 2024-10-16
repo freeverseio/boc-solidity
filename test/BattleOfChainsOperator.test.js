@@ -34,5 +34,20 @@ describe("BattleOfChainsOperator", function () {
     );
   });
 
+  it("should emit ShareTreasury event with percentage method", async function () {
+    const shareTXs = [
+      { recipient: addr1.address, amount: 10 },
+      { recipient: owner.address, amount: 20 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
+    .to.emit(battleOfChains, "ShareTreasury")
+    .withArgs(
+      owner.address,
+      1, // PERCENTAGE METHID
+      [[addr1.address, 10],[owner.address, 20]]
+    );
+  });
+
 });
 
