@@ -20,4 +20,20 @@ contract BattleOfChainsOperator is IBattleOfChainsOperator {
     function assignOperator(address _operator) public {
         emit AssignOperator(msg.sender, _operator);
     }
+
+    /// @inheritdoc IBattleOfChainsOperator
+    function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) public {
+        emit ShareTreasury(msg.sender, TreasuryShareMethod.ABSOLUTE, _shareTXs);
+    }
+
+    /// @inheritdoc IBattleOfChainsOperator
+    function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) public {
+        uint256 totalPercentage;
+        for (uint256 i = 0; i <= _shareTXs.length; i++) {
+            if (_shareTXs[i].amount > 1000) revert IndividualPercetageAbove100(_shareTXs[i].amount);
+            totalPercentage += totalPercentage;
+        }
+        if (totalPercentage > 1000) revert TotalPercetageAbove100(totalPercentage);
+        emit ShareTreasury(msg.sender, TreasuryShareMethod.PERCENTAGE_BPS, _shareTXs);
+    }
 }
