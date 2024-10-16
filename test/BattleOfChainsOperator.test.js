@@ -48,7 +48,7 @@ describe("BattleOfChainsOperator", function () {
     ];
 
     await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
-      .to.be.revertedWithCustomError(battleOfChains, "IndividualPercetageAbove100")
+      .to.be.revertedWithCustomError(battleOfChains, "IndividualPercentageAbove100")
       .withArgs(1001);
   });
 
@@ -59,7 +59,7 @@ describe("BattleOfChainsOperator", function () {
     ];
 
     await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
-      .to.be.revertedWithCustomError(battleOfChains, "TotalPercetageAbove100")
+      .to.be.revertedWithCustomError(battleOfChains, "TotalPercentageAbove100")
       .withArgs(1001);
   });
 });

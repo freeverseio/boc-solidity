@@ -18,8 +18,8 @@ interface IBattleOfChainsOperator {
         uint256 amount;
     }
 
-    error IndividualPercetageAbove100(uint256 _value);
-    error TotalPercetageAbove100(uint256 _value);
+    error IndividualPercentageAbove100(uint256 _value);
+    error TotalPercentageAbove100(uint256 _value);
 
     /**
      * @notice Emitted when a user assigns an operator.
@@ -29,15 +29,15 @@ interface IBattleOfChainsOperator {
     event AssignOperator(address indexed _from, address indexed _operator);
 
     /**
-     * @notice Emitted when a user shares the treasury obtained in the Battle of Chains game 
-     * Any amount remaining from the treasury will remain in the _from user
-     * When using absolute values, the transaction will be disregarded off-chain if the sum of amounts
-     * to be shared is larger than the balance of the _from user
+     * @notice Emitted when a user shares their treasury obtained in the Battle of Chains game.
+     * Any treasury not shared will stay with the `_from` user.
+     * When using absolute values, the transaction is disregarded off-chain if the sum of shared amounts
+     * exceeds the off-chain balance of the `_from` user.
      * @param _from The user sharing the treasury
-     * @param _method Specifies whether the amounts are to be interpreted as:
-     *    - if _method = 0 => absolute values
-     *    - if _method = 1 => percetage values, expressed in Basis Points (e.g. amount= 1580 would imply 15.80 percent)
-     * @param _shareTXs The list of share TXs, each specifying receipient and amount. 
+     * @param _method Specifies how the amounts are interpreted:
+     *    - if _method = 0 => absolute values,
+     *    - if _method = 1 => percentage values in Basis Points (e.g., amount = 1580 implies 15.80%).
+     * @param _shareTXs The list of share transactions, each specifying the recipient and amount.
      */
     event ShareTreasury(address indexed _from, TreasuryShareMethod _method, ShareTX[] _shareTXs);
 
@@ -52,21 +52,20 @@ interface IBattleOfChainsOperator {
     function assignOperator(address _operator) external;
 
     /**
-     * @notice Emits an event expressing the user intention to share the treasury obtained in the Battle of Chains game 
-     * Any amount remaining from the treasury will remain in the user that sends this TX
-     * The amounts to be shared must be expressed as absolute values.
-     * This transaction will be disregarded off-chain if the sum of amounts to be shared is larger than the balance of the _from user
-     * @param _shareTXs The list of share TXs, each specifying receipient and the absolute amount. 
+     * @notice Emits an event showing the user's intention to share the treasury obtained in the Battle of Chains game.
+     * Any remaining treasury stays with the user that sends this transaction.
+     * The amounts must be expressed as absolute values. Off-chain, the transaction is disregarded if the sum exceeds the user's balance.
+     * @param _shareTXs The list of share transactions, each specifying the recipient and the absolute amount.
      */
     function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) external;
 
     /**
-     * @notice Emits an event expressing the user intention to share the treasury obtained in the Battle of Chains game 
-     * Any amount remaining from the treasury will remain in the user that sends this TX
-     * The amounts to be shared must be expressed as percentages in Basis Point units (BPS)
-     * For example, an amount = 1580 implies 15.80 percent of the treasury. 
-     * @dev This transaction fails if the sum of percentages is larger than 100%
-     * @param _shareTXs The list of share TXs, each specifying receipient and the absolute amount. 
+     * @notice Emits an event showing the user's intention to share the treasury obtained in the Battle of Chains game.
+     * Any remaining treasury stays with the user that sends this transaction.
+     * The amounts must be expressed as percentages in Basis Points (BPS). 
+     * For example, an amount of 1580 implies 15.80% of the treasury.
+     * @dev The transaction fails if the total sum of percentages exceeds 100%.
+     * @param _shareTXs The list of share transactions, each specifying the recipient and the percentage amount.
      */
     function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) external;
 
