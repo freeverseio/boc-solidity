@@ -18,5 +18,21 @@ describe("BattleOfChainsOperator", function () {
       .to.emit(battleOfChains, "AssignOperator")
       .withArgs(owner.address, addr1.address);
   });
+
+  it("should emit ShareTreasury event with absolute method", async function () {
+    const shareTXs = [
+      { recipient: addr1.address, amount: 100000 },
+      { recipient: owner.address, amount: 200000 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryAbsolute(shareTXs))
+    .to.emit(battleOfChains, "ShareTreasury")
+    .withArgs(
+      owner.address,
+      0, // ABSOLUTE method (enum value)
+      [[addr1.address, 100000],[owner.address, 200000]]
+    );
+  });
+
 });
 

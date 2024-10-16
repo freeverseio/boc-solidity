@@ -55,7 +55,7 @@ describe("BattleOfChains", function () {
       .to.emit(battleOfChains, "JoinedChain")
       .withArgs(owner.address, homechain);
     const receipt = await tx.wait();
-      expect(receipt.logs[0].topics[0]).to.equal(eventJoinchainTopic0);
+    expect(receipt.logs[0].topics[0]).to.equal(eventJoinchainTopic0);
   });
 
   it("user cannot join null chain", async function () {
