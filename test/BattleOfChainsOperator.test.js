@@ -41,15 +41,25 @@ describe("BattleOfChainsOperator", function () {
     .withArgs(owner.address, 1, [[addr1.address, 10],[owner.address, 20]]);
   });
 
-  it("should revert ShareTreasury when inputs exceed 100", async function () {
+  it("should revert ShareTreasury when one inputs exceed 100", async function () {
     const shareTXs = [
-      { recipient: addr1.address, amount: 1000 },
+      { recipient: addr1.address, amount: 0 },
       { recipient: owner.address, amount: 1001 }
     ];
 
     await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
-      .to.be.revertedWithCustomError(battleOfChains, "IndividualPercetageAbove100")
+      .to.be.revertedWithCustomError(battleOfChains, "PercentageAbove100")
       .withArgs(1001);
+  });
+
+  it("should accept ShareTreasury one inputs equal to 100", async function () {
+    const shareTXs = [
+      { recipient: addr1.address, amount: 0 },
+      { recipient: owner.address, amount: 100 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
+      .not.to.be.reverted;
   });
 
   it("should revert ShareTreasury when sum of inputs exceed 100", async function () {
@@ -59,8 +69,32 @@ describe("BattleOfChainsOperator", function () {
     ];
 
     await expect(battleOfChains.shareTreasuryPercentage(shareTXs))
-      .to.be.revertedWithCustomError(battleOfChains, "TotalPercetageAbove100")
+      .to.be.revertedWithCustomError(battleOfChains, "PercentageAbove100")
       .withArgs(1001);
+  });
+
+  it("should accept ShareTreasury with one amount as the largest possible uint256", async function () {
+    const maxUint256 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+    const shareTXs = [
+        { recipient: addr1.address, amount: 0 },
+        { recipient: owner.address, amount: maxUint256 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryAbsolute(shareTXs))
+        .not.to.be.reverted;
+  });
+
+  it("does not revert even if sum overflows", async function () {
+    const maxUint256 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+
+    const shareTXs = [
+        { recipient: addr1.address, amount: maxUint256 },
+        { recipient: owner.address, amount: maxUint256 }
+    ];
+
+    await expect(battleOfChains.shareTreasuryAbsolute(shareTXs))
+        .not.to.be.reverted;
   });
 });
 
