@@ -18,8 +18,7 @@ interface IBattleOfChainsOperator {
         uint256 amount;
     }
 
-    error IndividualPercentageAbove100(uint256 _value);
-    error TotalPercentageAbove100(uint256 _value);
+    error PercentageAbove100(uint256 _value);
 
     /**
      * @notice Emitted when a user assigns an operator.
