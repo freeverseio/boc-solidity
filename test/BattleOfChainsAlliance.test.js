@@ -30,25 +30,25 @@ describe("BattleOfChainsAlliance", function () {
       .withArgs(battleOfChainsAlliance.getAddress(), addr1.address);
   });
 
-  it("should emit ShareTreasury event with absolute method", async function () {
-    const shareTXs = [
+  it("should emit SendGameTreasury event with absolute method", async function () {
+    const sendTXs = [
       { recipient: addr1.address, amount: 100000 },
       { recipient: owner.address, amount: 200000 }
     ];
 
-    await expect(battleOfChainsAlliance.shareTreasuryAbsolute(shareTXs))
-    .to.emit(battleOfChains721, "ShareTreasury")
+    await expect(battleOfChainsAlliance.sendGameTreasuryAbsolute(sendTXs))
+    .to.emit(battleOfChains721, "SendGameTreasury")
     .withArgs(battleOfChainsAlliance.getAddress(), 0, [[addr1.address, 100000],[owner.address, 200000]]);
   });
 
-  it("should emit ShareTreasury event with percentage method", async function () {
-    const shareTXs = [
+  it("should emit SendGameTreasury event with percentage method", async function () {
+    const sendTXs = [
       { recipient: addr1.address, amount: 10 },
       { recipient: owner.address, amount: 20 }
     ];
 
-    await expect(battleOfChainsAlliance.shareTreasuryPercentage(shareTXs))
-    .to.emit(battleOfChains721, "ShareTreasury")
+    await expect(battleOfChainsAlliance.sendGameTreasuryPercentage(sendTXs))
+    .to.emit(battleOfChains721, "SendGameTreasury")
     .withArgs(battleOfChainsAlliance.getAddress(), 1, [[addr1.address, 10],[owner.address, 20]]);
   });
 });

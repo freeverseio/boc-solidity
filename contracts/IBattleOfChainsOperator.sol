@@ -8,12 +8,12 @@ pragma solidity >=0.8.20;
  */
 
 interface IBattleOfChainsOperator {
-    enum TreasuryShareMethod {
+    enum GameTreasurySendMethod {
         ABSOLUTE,
         PERCENTAGE_BPS
     }
 
-    struct ShareTX {
+    struct SendTX {
         address recipient;
         uint256 amount;
     }
@@ -28,17 +28,17 @@ interface IBattleOfChainsOperator {
     event AssignOperator(address indexed _from, address indexed _operator);
 
     /**
-     * @notice Emitted when a user shares their treasury obtained in the Battle of Chains game.
-     * Any treasury not shared will stay with the `_from` user.
-     * When using absolute values, the transaction is disregarded off-chain if the sum of shared amounts
+     * @notice Emitted when an address sends their treasury obtained in the Battle of Chains game.
+     * Any treasury not sent will stay with the `_from` user.
+     * When using absolute values, the transaction is disregarded off-chain if the sum of sent amounts
      * exceeds the off-chain balance of the `_from` user.
-     * @param _from The user sharing the treasury
+     * @param _from The address sending the treasury
      * @param _method Specifies how the amounts are interpreted:
      *    - if _method = 0 => absolute values,
      *    - if _method = 1 => percentage values in Basis Points (e.g., amount = 1580 implies 15.80%).
-     * @param _shareTXs The list of share transactions, each specifying the recipient and amount.
+     * @param _sendTXs The list of send transactions, each specifying the recipient and amount.
      */
-    event ShareTreasury(address indexed _from, TreasuryShareMethod _method, ShareTX[] _shareTXs);
+    event SendGameTreasury(address indexed _from, GameTreasurySendMethod _method, SendTX[] _sendTXs);
 
     /**
      * @notice Grants permission to the specified operator address on the LAOS Network
@@ -51,21 +51,21 @@ interface IBattleOfChainsOperator {
     function assignOperator(address _operator) external;
 
     /**
-     * @notice Emits an event showing the user's intention to share the treasury obtained in the Battle of Chains game.
+     * @notice Emits an event showing the user's intention to send the treasury obtained in the Battle of Chains game.
      * Any remaining treasury stays with the user that sends this transaction.
      * The amounts must be expressed as absolute values. Off-chain, the transaction is disregarded if the sum exceeds the user's balance.
-     * @param _shareTXs The list of share transactions, each specifying the recipient and the absolute amount.
+     * @param _sendTXs The list of send transactions, each specifying the recipient and the absolute amount.
      */
-    function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) external;
+    function sendGameTreasuryAbsolute(SendTX[] calldata _sendTXs) external;
 
     /**
-     * @notice Emits an event showing the user's intention to share the treasury obtained in the Battle of Chains game.
+     * @notice Emits an event showing the user's intention to send the treasury obtained in the Battle of Chains game.
      * Any remaining treasury stays with the user that sends this transaction.
      * The amounts must be expressed as percentages in Basis Points (BPS). 
      * For example, an amount of 1580 implies 15.80% of the treasury.
      * @dev The transaction fails if the total sum of percentages exceeds 100%.
-     * @param _shareTXs The list of share transactions, each specifying the recipient and the percentage amount.
+     * @param _sendTXs The list of send transactions, each specifying the recipient and the percentage amount.
      */
-    function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) external;
+    function sendGameTreasuryPercentage(SendTX[] calldata _sendTXs) external;
 
 }

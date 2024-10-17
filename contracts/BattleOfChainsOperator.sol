@@ -22,17 +22,17 @@ contract BattleOfChainsOperator is IBattleOfChainsOperator {
     }
 
     /// @inheritdoc IBattleOfChainsOperator
-    function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) public {
-        emit ShareTreasury(msg.sender, TreasuryShareMethod.ABSOLUTE, _shareTXs);
+    function sendGameTreasuryAbsolute(SendTX[] calldata _sendTXs) public {
+        emit SendGameTreasury(msg.sender, GameTreasurySendMethod.ABSOLUTE, _sendTXs);
     }
 
     /// @inheritdoc IBattleOfChainsOperator
-    function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) public {
+    function sendGameTreasuryPercentage(SendTX[] calldata _sendTXs) public {
         uint256 totalPercentage;
-        for (uint256 i = 0; i < _shareTXs.length; i++) {
-            totalPercentage += _shareTXs[i].amount;
+        for (uint256 i = 0; i < _sendTXs.length; i++) {
+            totalPercentage += _sendTXs[i].amount;
         }
         if (totalPercentage > 1000) revert PercentageAbove100(totalPercentage);
-        emit ShareTreasury(msg.sender, TreasuryShareMethod.PERCENTAGE_BPS, _shareTXs);
+        emit SendGameTreasury(msg.sender, GameTreasurySendMethod.PERCENTAGE_BPS, _sendTXs);
     }
 }

@@ -34,12 +34,12 @@ contract BattleOfChainsAlliance is IBattleOfChainsAlliance {
     }
 
     /// @inheritdoc IBattleOfChainsOperator
-    function shareTreasuryAbsolute(ShareTX[] calldata _shareTXs) public  {
-        IBattleOfChainsOperator(battleOfChains721Contract).shareTreasuryAbsolute(_shareTXs);
+    function sendGameTreasuryAbsolute(SendTX[] calldata _sendTXs) public  {
+        IBattleOfChainsOperator(battleOfChains721Contract).sendGameTreasuryAbsolute(_sendTXs);
     }
 
     /// @inheritdoc IBattleOfChainsOperator
-    function shareTreasuryPercentage(ShareTX[] calldata _shareTXs) public {
-        IBattleOfChainsOperator(battleOfChains721Contract).shareTreasuryPercentage(_shareTXs);
+    function sendGameTreasuryPercentage(SendTX[] calldata _sendTXs) public {
+        IBattleOfChainsOperator(battleOfChains721Contract).sendGameTreasuryPercentage(_sendTXs);
     }
 }
