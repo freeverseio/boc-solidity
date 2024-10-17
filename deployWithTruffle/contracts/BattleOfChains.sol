@@ -143,17 +143,15 @@ pragma solidity >=0.8.20;
 
 /**
  * @title IBattleOfChains Interface
- * @dev Interface for the Battle of Chains contract, which defines
- * the structure and functions required for implementing the Battle of Chains logic.
- * This interface outlines the core functionalities for managing user actions,
- * cross-chain interactions, and NFT minting in a game environment.
- * It is intended to be implemented by contracts that manage game logic and interactions.
+ * @dev Interface for the Battle of Chains contract, defining the core structure and functions 
+ * required for managing user actions, cross-chain interactions, and NFT minting in the game environment.
+ * This is intended for implementation by contracts managing game logic.
  * @notice Developed and maintained by the LAOS Team and Freeverse.
  */
 
 interface IBattleOfChains {
     /**
-     * @dev The set of possible chain actions:
+     * @dev The set of possible chain actions.
      */
     enum ChainActionType {
         DEFEND,
@@ -163,9 +161,8 @@ interface IBattleOfChains {
     }
 
     /**
-     * @dev
-     * The set of possible attack areas used in actions of type ATTACK_AREA
-     * If the desired action is not of type ATTACK_AREA, then AttackArea must be set to NULL
+     * @dev The set of possible attack areas for actions of type ATTACK_AREA.
+     * If the action is not ATTACK_AREA, AttackArea should be set to NULL.
      */
     enum AttackArea {
         NULL,
@@ -177,9 +174,8 @@ interface IBattleOfChains {
     }
 
     /**
-     * @dev Represents an action proposed to / voted by a user to its home chain
-     * Used as input to functions that require details about chain actions,
-     * as well as to emitted events.
+     * @dev Represents an action voted by a user to their home chain.
+     * This struct is used as input to functions and emitted in events.
      */
     struct ChainAction {
         uint32 targetChain;
@@ -195,15 +191,14 @@ interface IBattleOfChains {
     error AttackAddressCannotBeEmpty();
 
     /**
-     * @dev Emitted when a user joins a chain. The chain is specified by its chain ID
+     * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
      */
-    event JoinedChain(address indexed _user, uint32 indexed _homeChain);
+    event JoinedChain(address indexed _user, uint32 indexed _homeChain, string _nickname);
 
     /**
-     * @dev Emitted when a user performs a multichain mint, specifying the homechain
-     * to which the user is assigned, the type of mint, and the tokenId.
-     * The resulting tokenId identifies every NFT produced in all supported contracts
-     * on all supported chains.
+     * @dev Emitted when a user performs a multichain mint, specifying the home chain to which
+     * the user belongs, the type of mint, and the token ID.
+     * The tokenId identifies NFTs created on all supported chains.
      */
     event MultichainMint(
         uint256 _tokenId,
@@ -213,9 +208,8 @@ interface IBattleOfChains {
     );
 
     /**
-     * @dev Emitted when a user performs an attack within a target chain, at the specified targetAddress,
-     * using the assets owned in the target chain, with the provided attack strategy.
-     * If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
+     * @dev Emitted when a user executes an attack on a target chain, using their assets in the target chain.
+     * If _tokenIds is empty, all available assets are used.
      */
     event Attack(
         uint256[] _tokenIds,
@@ -227,11 +221,11 @@ interface IBattleOfChains {
     );
 
     /**
-     * @dev Emitted when a user proposes a chain action to be performed.
-     * This event captures the details of the proposed action, including the operator initiating
-     * the proposal, the user for whom the action is proposed, the source chain, the action details,
+     * @dev Emitted when a user votes for a chain action to be performed.
+     * This event captures the details of the voted action, including the operator initiating
+     * the proposal, the user for whom the action is voted, the source chain, the action details,
      * and any additional comments.
-     * User and operator coincide if the user sent the proposal transaction directly
+     * User and operator coincide if the user sent the vote transaction directly
      */
     event ChainActionProposal(
         address indexed _operator,
@@ -242,30 +236,39 @@ interface IBattleOfChains {
     );
 
     /**
-     * @notice Assigns the sender of the transaction to the specified chain. The assignment cannot be changed.
-     * @dev Reverts if called more than once. ChainId = 0 is not allowed.
-     * @param _homeChain the chainId of the chain to assign to the sender
+     * @dev Emitted when a user attempts to upgrade an asset.
      */
-    function joinHomeChain(uint32 _homeChain) external;
+    event Upgrade(
+        address indexed _operator,
+        address indexed _user,
+        uint32 _chain,
+        uint256 _tokenId
+    );
 
     /**
-     * @notice Mints NFTs across all supported chains of the provided _type
-     * @notice The attributes of the minted NFT depend on the current state of the user and the game
-     * @notice Reverts if the provided token type is not supported
-     * @param _type An integer specifying the desired type of minted NFTs
-     * @return _tokenId The tokenId that identifies the minted NFTs in the contracts on all supported chains
+     * @notice Assigns the transaction sender to the specified chain. This assignment is permanent.
+     * @dev Reverts if called more than once. ChainId must be greater than 0.
+     * @param _homeChain The chainId to assign the sender to.
+     * @param _userNickname The nickname desired by the user within the game.
+     */
+    function joinHomeChain(uint32 _homeChain, string memory _userNickname) external;
+
+    /**
+     * @notice Mints NFTs across all supported chains for the specified _type.
+     * The attributes of the minted NFT depend on the current game state.
+     * Reverts if the provided token type is unsupported.
+     * @param _type The type of NFTs to mint.
+     * @return _tokenId The tokenId for the minted NFTs.
      */
     function multichainMint(uint256 _type) external returns (uint256 _tokenId);
 
     /**
-     * @notice Executes an attack on the specified target chain, at the specified targetAddress, using the sender's assets in the target chain
-     * @notice specified by _tokenIds, using the provided attack strategy.
-     * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
-     * @notice The effect of the attack depends on the offchain state of the user and the game.
-     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used.
-     * @param _targetAddress the address in the targetChain to attack.
-     * @param _targetChain the chainId of the chain where the attack is to be performed.
-     * @param _strategy a uint32 specifying the attack strategy.
+     * @notice Executes an attack on a specified target chain using the sender's assets in the target chain.
+     * If _tokenIds is empty, all available assets are used.
+     * @param _tokenIds The list of NFTs used in the attack. If empty, all available assets are used.
+     * @param _targetAddress The address in the target chain to attack.
+     * @param _targetChain The chainId where the attack takes place.
+     * @param _strategy The attack strategy used.
      */
     function attack(
         uint256[] calldata _tokenIds,
@@ -276,15 +279,15 @@ interface IBattleOfChains {
 
     /**
      * @notice Tries to perform an attack on behalf of the provided attacker address.
-     * @notice The effect is disregarded off-chain unless the user has authorized the transaction sender as an operator
+     * @notice The effect is disregarded off-chain unless the attacker has authorized the transaction sender as an operator
      * @notice If not disregarded, it executes an attack on the provided target chain, at the provided targetAddress, with the assets
      * @notice owned by the sender in the target chain, specified by the provided _tokenIds, using the provided attack strategy.
      * @notice If _tokenIds is an empty list, the attack defaults to using all available assets owned by the sender in the target chain.
      * @notice The effect of the attack depends on the offchain state of the attacker and the game.
-     * @param _tokenIds the list of the NFTs participating in the attack. If empty, all possible assets are used.
+     * @param _tokenIds The list of NFTs used in the attack. If empty, all available assets are used.
      * @param _targetAddress the address in the targetChain to attack.
-     * @param _targetChain the chainId of the chain where the attack is to be performed.
-     * @param _strategy a uint32 specifying the attack strategy.
+     * @param _targetChain The chainId where the attack takes place.
+     * @param _strategy The attack strategy used.
      * @param _attacker The user on whose behalf the sender is attempting to perform the action.
      */
     function attackOnBehalfOf(
@@ -296,10 +299,11 @@ interface IBattleOfChains {
     ) external;
 
     /**
-     * @notice Votes for the homeChain of the sender to perform the provided chain action during
-     * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
-     * @param _chainAction The desired action to be performed by the chain of the sender in the current period
-     * @param _comment An optional string providing arguments for the proposed action
+     * @notice Casts a vote for the sender's home chain to perform the specified action
+     * during the current voting period. The action's impact depends on the user's 
+     * and game's state.
+     * @param _chainAction The action voted for the sender's home chain.
+     * @param _comment An optional comment providing arguments for the voted action
      */
     function voteChainAction(
         ChainAction calldata _chainAction,
@@ -313,8 +317,8 @@ interface IBattleOfChains {
      * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
      * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
      * @param _user The user on whose behalf the sender is attempting to perform the action.
-     * @param _chainAction The desired action to be performed by the chain of the provided user in the current period
-     * @param _comment An optional string providing arguments for the proposed action
+     * @param _chainAction The action voted for the user's home chain.
+     * @param _comment An optional comment providing arguments for the proposed action
      */
     function voteChainActionOnBehalfOf(
         address _user,
@@ -323,32 +327,58 @@ interface IBattleOfChains {
     ) external;
 
     /**
-     * @notice Returns true if the provided user has previously joined a chain
-     * @param _user the address of the user
+     * @notice Attempts to perform an upgrade on an asset owned by the sender
+     * on the provided chain
+     * @param _chain The chainID of the chain where the asset resides.
+     * @param _tokenId The tokenId of the asset.
+     */
+    function upgrade(uint32 _chain, uint256 _tokenId) external;
+
+    /**
+     * @notice Attempts to upgrade an asset on behalf of the specified user.
+     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
+     * @notice transaction sender as operator.
+     * @param _user The user on whose behalf the action is taken.
+     * @param _chain The chainId of the chain where the asset resides.
+     * @param _tokenId The tokenId of the asset.
+     */
+    function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) external;
+
+    /**
+     * @notice Returns true if a user has joined a chain.
+     * @param _user The address of the user.
+     * @return True if the user has joined a chain.
      */
     function hasHomeChain(address _user) external view returns (bool);
 
     /**
-     * @notice Returns true if the provided chainAction is formally correct
-     * @param _chainAction the desired action to be performed by the chain of the provided user in the current period
-     * @return _isOK true if the provided chainAction is formally correct
+     * @notice Validates whether a proposed chain action is formally correct.
+     * @param _chainAction The action proposed.
+     * @return _isOK True if the action is valid.
      */
-    function areChainActionInputsCorrect(ChainAction calldata _chainAction) external pure returns (bool _isOK);
+    function areChainActionInputsCorrect(uint32 _homeChain, ChainAction calldata _chainAction) external pure returns (bool _isOK);
 
     /**
-     * @notice Returns the user that executed the multichain mint corresponding to the provided tokenId.
-     * @notice Note that NFTs minted on different chains may have been traded and may be owned by other players.
-     * @param _tokenId the tokenId of the multichain mint
-     * @return _creator the address of the user that executed the multichain mint
+     * @notice Returns the user who executed the multichain mint for the specified tokenId.
+     * Note that minted NFTs may have been traded and, hence, be owned by other players.
+     * @param _tokenId The tokenId of the multichain mint.
+     * @return _creator The address of the user who executed the multichain mint.
      */
-    function creatorFromTokenId(uint256 _tokenId) external pure returns(address _creator);
+    function creatorFromTokenId(uint256 _tokenId) external pure returns (address _creator);
 
     /**
-     * @notice Returns the (x,y) coordinates associated to the provided address
-     * @param _user the address of the user
+     * @notice Returns the (x, y) coordinates associated with a given address.
+     * @param _user The address of the user.
      */
     function coordinatesOf(address _user) external pure returns (uint256 _x, uint256 _y);
 
+    /**
+     * @notice Returns the tokenURI of the provided multichain-minted token
+     * @dev It internally calls the precompile collection contract
+     * @dev It reverts if the token has not been minted. 
+     * @param _tokenId the tokenId of the multichain mint
+     */
+    function tokenURI(uint256 _tokenId) external view returns (string memory);
 }
 
 
@@ -697,12 +727,12 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function joinHomeChain(uint32 _homeChain) public {
+    function joinHomeChain(uint32 _homeChain, string memory _userNickname) public {
         if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOf[msg.sender] != NULL_CHAIN)
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
         homeChainOf[msg.sender] = _homeChain;
-        emit JoinedChain(msg.sender, _homeChain);
+        emit JoinedChain(msg.sender, _homeChain, _userNickname);
     }
 
     /// @inheritdoc IBattleOfChains
@@ -754,6 +784,16 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         _proposeChainAction(_user, _chainAction, _comment);
     }
 
+    /// @inheritdoc IBattleOfChains
+    function upgrade(uint32 _chain, uint256 _tokenId) public {
+        _upgrade(msg.sender, _chain, _tokenId);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) public {
+        _upgrade(_user, _chain, _tokenId);
+    }
+
     function _attack(
         uint256[] calldata tokenIds,
         address _targetAddress,
@@ -778,8 +818,12 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     ) private {
         uint32 _sourceChain = homeChainOf[_user];
         if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
-        if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
+        if (!areChainActionInputsCorrect(_sourceChain, _chainAction)) revert IncorrectAttackInput();
         emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
+    }
+
+    function _upgrade(address _user, uint32 _chain, uint256 _tokenId) private {
+        emit Upgrade(msg.sender, _user, _chain, _tokenId);
     }
 
     /// @inheritdoc IBattleOfChains
@@ -788,18 +832,20 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
+    function tokenURI(uint256 _tokenId) public view returns (string memory _tokenURI) {
+        return collectionContract.tokenURI(_tokenId);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function areChainActionInputsCorrect(uint32 _sourceChain, ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
         bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
         bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
+            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull && (_chainAction.targetChain != _sourceChain);
         }
         if (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return
-                !_isTargetChainNull &&
-                !_isAttackAddressNull &&
-                _isAttackAreaNull;
+            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull && (_chainAction.targetChain != _sourceChain);
         }
         return _isTargetChainNull && _isAttackAddressNull && _isAttackAreaNull;
     }

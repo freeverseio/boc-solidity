@@ -2,7 +2,7 @@ import { ethers, network } from "hardhat";
 
 async function main() {
   // const battleOfChainsAddressOnLAOS = '0x12Cc8Ab85b9dc8f8Cddd5fc0e96d7a42847661B1';
-  const precompileCollectionOnLAOS = '0xfffFfffffFfFfffFFfFfffFe0000000000000014';
+  const precompileCollectionOnLAOS = '0xfFFfFFffFffFfFFFffFffFFe0000000000000016';
   const useLAOSMainnet = true;
   const baseULOC =
     useLAOSMainnet ?

@@ -29,9 +29,9 @@ module.exports = async (callback) => {
     await precompileContract.transferOwnership(battle.address);
     console.log('Setting precompile owner to BattleOfChains contract...DONE');
 
-    console.log('assigning tokenURI for type 0 and type 1 multimints...');
-    await battle.addTokenURIs(["ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K", "ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K"]);
-    console.log('...DONE');
+    // console.log('assigning tokenURI for type 0 and type 1 multimints...');
+    // await battle.addTokenURIs(["ipfs://QmS5adNn3aAWVLLBXmjG3kK8gbq36NfnefmKm9udFhGi3K"]);
+    // console.log('...DONE');
 
     console.log('Is owner of precompile the battleOfChains contract?', battle.address === await precompileContract.owner());
     console.log('....', battle.address, await precompileContract.owner());
