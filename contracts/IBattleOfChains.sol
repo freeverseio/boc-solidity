@@ -53,7 +53,7 @@ interface IBattleOfChains {
     /**
      * @dev Emitted when a user joins a chain, specifying the chain ID.
      */
-    event JoinedChain(address indexed _user, uint32 indexed _homeChain);
+    event JoinedChain(address indexed _user, uint32 indexed _homeChain, string _nickname);
 
     /**
      * @dev Emitted when a user performs a multichain mint, specifying the home chain to which
@@ -109,8 +109,9 @@ interface IBattleOfChains {
      * @notice Assigns the transaction sender to the specified chain. This assignment is permanent.
      * @dev Reverts if called more than once. ChainId must be greater than 0.
      * @param _homeChain The chainId to assign the sender to.
+     * @param _userNickname The nickname desired by the user within the game.
      */
-    function joinChain(uint32 _homeChain) external;
+    function joinChain(uint32 _homeChain, string memory _userNickname) external;
 
     /**
      * @notice Mints NFTs across all supported chains for the specified _type.
