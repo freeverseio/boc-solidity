@@ -27,12 +27,12 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function joinChain(uint32 _homeChain) public {
+    function joinChain(uint32 _homeChain, string memory _userNickname) public {
         if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOf[msg.sender] != NULL_CHAIN)
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
         homeChainOf[msg.sender] = _homeChain;
-        emit JoinedChain(msg.sender, _homeChain);
+        emit JoinedChain(msg.sender, _homeChain, _userNickname);
     }
 
     /// @inheritdoc IBattleOfChains
