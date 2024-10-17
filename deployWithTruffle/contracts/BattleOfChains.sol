@@ -246,7 +246,7 @@ interface IBattleOfChains {
      * @dev Reverts if called more than once. ChainId = 0 is not allowed.
      * @param _homeChain the chainId of the chain to assign to the sender
      */
-    function joinChain(uint32 _homeChain) external;
+    function joinHomeChain(uint32 _homeChain) external;
 
     /**
      * @notice Mints NFTs across all supported chains of the provided _type
@@ -301,13 +301,13 @@ interface IBattleOfChains {
      * @param _chainAction The desired action to be performed by the chain of the sender in the current period
      * @param _comment An optional string providing arguments for the proposed action
      */
-    function proposeChainAction(
+    function voteChainAction(
         ChainAction calldata _chainAction,
         string calldata _comment
     ) external;
 
     /**
-     * @notice Tries to perform proposeChainAction on behalf of the provided user address.
+     * @notice Tries to perform voteChainAction on behalf of the provided user address.
      * @notice The effect is completely disregarded offchain unless the user has previously authorized the
      * @notice transaction sender as operator.
      * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
@@ -316,7 +316,7 @@ interface IBattleOfChains {
      * @param _chainAction The desired action to be performed by the chain of the provided user in the current period
      * @param _comment An optional string providing arguments for the proposed action
      */
-    function proposeChainActionOnBehalfOf(
+    function voteChainActionOnBehalfOf(
         address _user,
         ChainAction calldata _chainAction,
         string calldata _comment
@@ -697,7 +697,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function joinChain(uint32 _homeChain) public {
+    function joinHomeChain(uint32 _homeChain) public {
         if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOf[msg.sender] != NULL_CHAIN)
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
@@ -738,7 +738,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainAction(
+    function voteChainAction(
         ChainAction calldata _chainAction,
         string calldata _comment
     ) public {
@@ -746,7 +746,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainActionOnBehalfOf(
+    function voteChainActionOnBehalfOf(
         address _user,
         ChainAction calldata _chainAction,
         string calldata _comment

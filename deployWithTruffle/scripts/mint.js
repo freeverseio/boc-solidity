@@ -27,9 +27,9 @@ module.exports = async (callback) => {
     console.log('....', battle.address, await precompileContract.owner());
 
     // Activate these lines only if a mint test is required
-    console.log('user joinChain...')
-    await battle.joinChain(1);
-    console.log('user joinChain... DONE')
+    console.log('user joinHomeChain...')
+    await battle.joinHomeChain(1);
+    console.log('user joinHomeChain... DONE')
 
     console.log('user mints')
     await battle.multichainMint(0);
