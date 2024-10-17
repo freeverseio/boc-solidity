@@ -302,9 +302,9 @@ describe("BattleOfChains", function () {
     )).to.be.false;
   });
 
-  it("proposeChainAction fails if user has not joined yet", async function () {
+  it("voteChainAction fails if user has not joined yet", async function () {
     expect(await battleOfChains.hasHomeChain(owner)).to.be.false;
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 0,
         actionType: ChainActionType.DEFEND,
@@ -314,7 +314,7 @@ describe("BattleOfChains", function () {
       "dummy comment"
     )).to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet");
     await battleOfChains.joinHomeChain(32, nickname = 'rambo');
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 0,
         actionType: ChainActionType.DEFEND,
@@ -325,9 +325,9 @@ describe("BattleOfChains", function () {
     )).not.to.be.reverted;
   });
 
-  it("proposeChainActionOnBehalfOf fails if user has not joined yet", async function () {
+  it("voteChainActionOnBehalfOf fails if user has not joined yet", async function () {
     expect(await battleOfChains.hasHomeChain(addr1)).to.be.false;
-    await expect(battleOfChains.proposeChainActionOnBehalfOf(
+    await expect(battleOfChains.voteChainActionOnBehalfOf(
       addr1.address,
       {
         targetChain: 0,
@@ -338,7 +338,7 @@ describe("BattleOfChains", function () {
       "dummy comment"
     )).to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet");
     await battleOfChains.connect(addr1).joinHomeChain(32, nickname = 'rambo');
-    await expect(battleOfChains.proposeChainActionOnBehalfOf(
+    await expect(battleOfChains.voteChainActionOnBehalfOf(
       addr1.address,
       {
         targetChain: 0,
@@ -350,9 +350,9 @@ describe("BattleOfChains", function () {
     )).not.to.be.reverted;
   });
 
-  it("proposeChainAction fails on wrong inputs", async function () {
+  it("voteChainAction fails on wrong inputs", async function () {
     await battleOfChains.joinHomeChain(32, nickname = 'rambo');
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 0,
         actionType: ChainActionType.DEFEND,
@@ -361,7 +361,7 @@ describe("BattleOfChains", function () {
       },
       "dummy comment"
     )).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 0,
         actionType: ChainActionType.ATTACK_ADDRESS,
@@ -372,9 +372,9 @@ describe("BattleOfChains", function () {
     )).to.be.revertedWithCustomError(battleOfChains, "IncorrectAttackInput")
   });
 
-  it("proposeChainAction succeeds on correct inputs", async function () {
+  it("voteChainAction succeeds on correct inputs", async function () {
     await battleOfChains.joinHomeChain(32, nickname = 'rambo');
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 0,
         actionType: ChainActionType.DEFEND,
@@ -383,7 +383,7 @@ describe("BattleOfChains", function () {
       },
       "dummy comment"
     )).not.to.be.reverted;
-    await expect(battleOfChains.proposeChainAction(
+    await expect(battleOfChains.voteChainAction(
       {
         targetChain: 12,
         actionType: ChainActionType.ATTACK_ADDRESS,
@@ -394,7 +394,7 @@ describe("BattleOfChains", function () {
     )).not.to.be.reverted;
   });
 
-  it("emits ChainActionProposal event when proposeChainAction is called", async function () {
+  it("emits ChainActionProposal event when voteChainAction is called", async function () {
     const eventChainActionTopic0 = "0x8747b87ceb2b2f1164eca74f645e359271ec95927021b6ff6470b000a5693f03";
     await battleOfChains.joinHomeChain(sourceChain = 32, nickname = 'rambo');
     const _targetChain = 0;
@@ -406,7 +406,7 @@ describe("BattleOfChains", function () {
     };
     const comment = "dummy comment";
 
-    const tx = await battleOfChains.proposeChainAction(chainAction, comment);
+    const tx = await battleOfChains.voteChainAction(chainAction, comment);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")
@@ -423,7 +423,7 @@ describe("BattleOfChains", function () {
   
   });
 
-  it("emits ChainActionProposal event when proposeChainActionOnBehalfOf is called", async function () {
+  it("emits ChainActionProposal event when voteChainActionOnBehalfOf is called", async function () {
     await battleOfChains.connect(addr1).joinHomeChain(sourceChain = 32, nickname = 'rambo');
     const _targetChain = 0;
     const chainAction = {
@@ -434,7 +434,7 @@ describe("BattleOfChains", function () {
     };
     const comment = "dummy comment";
 
-    const tx = await battleOfChains.proposeChainActionOnBehalfOf(addr1.address, chainAction, comment);
+    const tx = await battleOfChains.voteChainActionOnBehalfOf(addr1.address, chainAction, comment);
 
     await expect(tx)
       .to.emit(battleOfChains, "ChainActionProposal")

@@ -34,7 +34,7 @@ interface IBattleOfChains {
     }
 
     /**
-     * @dev Represents an action proposed by a user to their home chain.
+     * @dev Represents an action voted by a user to their home chain.
      * This struct is used as input to functions and emitted in events.
      */
     struct ChainAction {
@@ -81,11 +81,11 @@ interface IBattleOfChains {
     );
 
     /**
-     * @dev Emitted when a user proposes a chain action to be performed.
-     * This event captures the details of the proposed action, including the operator initiating
-     * the proposal, the user for whom the action is proposed, the source chain, the action details,
+     * @dev Emitted when a user votes for a chain action to be performed.
+     * This event captures the details of the voted action, including the operator initiating
+     * the proposal, the user for whom the action is voted, the source chain, the action details,
      * and any additional comments.
-     * User and operator coincide if the user sent the proposal transaction directly
+     * User and operator coincide if the user sent the vote transaction directly
      */
     event ChainActionProposal(
         address indexed _operator,
@@ -159,28 +159,28 @@ interface IBattleOfChains {
     ) external;
 
     /**
-     * @notice Allows the sender to propose an action to their home chain
-     * during the current voting period.
-     * The effect depends on the current state of the user and game.
-     * @param _chainAction The action proposed for the sender's home chain.
-     * @param _comment An optional comment providing arguments for the proposed action
+     * @notice Casts a vote for the sender's home chain to perform the specified action
+     * during the current voting period. The action's impact depends on the user's 
+     * and game's state.
+     * @param _chainAction The action voted for the sender's home chain.
+     * @param _comment An optional comment providing arguments for the voted action
      */
-    function proposeChainAction(
+    function voteChainAction(
         ChainAction calldata _chainAction,
         string calldata _comment
     ) external;
 
     /**
-     * @notice Tries to perform proposeChainAction on behalf of the provided user address.
+     * @notice Tries to perform voteChainAction on behalf of the provided user address.
      * @notice The effect is completely disregarded offchain unless the user has previously authorized the
      * @notice transaction sender as operator.
      * @notice If not disregarded, it votes for the homeChain of the provided user to perform the provided chain action during
      * @notice the current voting period. The effect of the vote depends on the current state of the user and the game
      * @param _user The user on whose behalf the sender is attempting to perform the action.
-     * @param _chainAction The action proposed for the user's home chain.
+     * @param _chainAction The action voted for the user's home chain.
      * @param _comment An optional comment providing arguments for the proposed action
      */
-    function proposeChainActionOnBehalfOf(
+    function voteChainActionOnBehalfOf(
         address _user,
         ChainAction calldata _chainAction,
         string calldata _comment

@@ -68,7 +68,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainAction(
+    function voteChainAction(
         ChainAction calldata _chainAction,
         string calldata _comment
     ) public {
@@ -76,7 +76,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function proposeChainActionOnBehalfOf(
+    function voteChainActionOnBehalfOf(
         address _user,
         ChainAction calldata _chainAction,
         string calldata _comment
