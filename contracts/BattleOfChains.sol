@@ -118,7 +118,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     ) private {
         uint32 _sourceChain = homeChainOf[_user];
         if (_sourceChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
-        if (!areChainActionInputsCorrect(_chainAction)) revert IncorrectAttackInput();
+        if (!areChainActionInputsCorrect(_sourceChain, _chainAction)) revert IncorrectAttackInput();
         emit ChainActionProposal(msg.sender, _user, _sourceChain, _chainAction, _comment);
     }
 
@@ -137,18 +137,17 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function areChainActionInputsCorrect(ChainAction calldata _chainAction) public pure returns (bool _isOK) {
+    function areChainActionInputsCorrect(uint32 _sourceChain, ChainAction calldata _chainAction) public pure returns (bool _isOK) {
         bool _isAttackAddressNull = _chainAction.attackAddress == address(0);
         bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
         bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
+            if (_chainAction.targetChain == _sourceChain) revert CannotAttackHomeChain();
             return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
         }
         if (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            return
-                !_isTargetChainNull &&
-                !_isAttackAddressNull &&
-                _isAttackAreaNull;
+            if (_chainAction.targetChain == _sourceChain) revert CannotAttackHomeChain();
+            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
         }
         return _isTargetChainNull && _isAttackAddressNull && _isAttackAreaNull;
     }

@@ -49,6 +49,7 @@ interface IBattleOfChains {
     error UserHasNotJoinedChainYet(address _user);
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
+    error CannotAttackHomeChain();
 
     /**
      * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
@@ -216,7 +217,7 @@ interface IBattleOfChains {
      * @param _chainAction The action proposed.
      * @return _isOK True if the action is valid.
      */
-    function areChainActionInputsCorrect(ChainAction calldata _chainAction) external pure returns (bool _isOK);
+    function areChainActionInputsCorrect(uint32 _homeChain, ChainAction calldata _chainAction) external pure returns (bool _isOK);
 
     /**
      * @notice Returns the user who executed the multichain mint for the specified tokenId.
