@@ -124,7 +124,7 @@ describe("BattleOfChains", function () {
     expect(receipt.logs[0].topics[0]).to.equal(eventAttackTopic0);
   });
 
-  it("attack address emits expected event", async function () {
+  it("attackOnBehalfOf address emits expected event", async function () {
     const tokenIds = [1, 2];
     const user = '0x1111111111111111111100000000000000000000';
     const delegatedUser = addr1.address;
@@ -138,6 +138,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return true for valid defend", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.DEFEND,
@@ -150,6 +151,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return true for valid improve", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.IMPROVE,
@@ -162,6 +164,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return false for wrong defend", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.DEFEND,
@@ -171,6 +174,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.DEFEND,
@@ -180,6 +184,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 12,
         {
           targetChain: 1,
           actionType: ChainActionType.DEFEND,
@@ -192,6 +197,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return false for wrong improve", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.IMPROVE,
@@ -201,14 +207,17 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.IMPROVE,
           attackAddress: nullAddress,
           attackArea: Attack_Area.NORTH,
         }
-    )).to.be.false;    expect(
-    await battleOfChains.areChainActionInputsCorrect(
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 1,
           actionType: ChainActionType.IMPROVE,
@@ -221,6 +230,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return true for valid attack_address", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
@@ -233,6 +243,7 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return true for valid attack_area", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 41,
           actionType: ChainActionType.ATTACK_AREA,
@@ -245,6 +256,17 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return false for wrong attack_address", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 12,
+        {
+          targetChain: 12,
+          actionType: ChainActionType.ATTACK_ADDRESS,
+          attackAddress: collectionAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
@@ -254,6 +276,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 12,
           actionType: ChainActionType.ATTACK_ADDRESS,
@@ -263,6 +286,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.ATTACK_ADDRESS,
@@ -275,6 +299,17 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return false for wrong attack_area", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 41,
+        {
+          targetChain: 41,
+          actionType: ChainActionType.ATTACK_AREA,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 12,
           actionType: ChainActionType.ATTACK_AREA,
@@ -284,6 +319,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 12,
           actionType: ChainActionType.ATTACK_AREA,
@@ -293,6 +329,7 @@ describe("BattleOfChains", function () {
     )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 1,
         {
           targetChain: 0,
           actionType: ChainActionType.ATTACK_AREA,
