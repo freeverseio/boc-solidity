@@ -111,7 +111,7 @@ interface IBattleOfChains {
      * @param _homeChain The chainId to assign the sender to.
      * @param _userNickname The nickname desired by the user within the game.
      */
-    function joinChain(uint32 _homeChain, string memory _userNickname) external;
+    function joinHomeChain(uint32 _homeChain, string memory _userNickname) external;
 
     /**
      * @notice Mints NFTs across all supported chains for the specified _type.

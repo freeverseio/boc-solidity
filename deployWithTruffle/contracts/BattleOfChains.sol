@@ -246,7 +246,7 @@ interface IBattleOfChains {
      * @dev Reverts if called more than once. ChainId = 0 is not allowed.
      * @param _homeChain the chainId of the chain to assign to the sender
      */
-    function joinChain(uint32 _homeChain) external;
+    function joinHomeChain(uint32 _homeChain) external;
 
     /**
      * @notice Mints NFTs across all supported chains of the provided _type
@@ -697,7 +697,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
-    function joinChain(uint32 _homeChain) public {
+    function joinHomeChain(uint32 _homeChain) public {
         if (_homeChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
         if (homeChainOf[msg.sender] != NULL_CHAIN)
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
