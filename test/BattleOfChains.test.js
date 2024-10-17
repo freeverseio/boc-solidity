@@ -256,6 +256,16 @@ describe("BattleOfChains", function () {
   it("areChainActionInputsCorrect should return false for wrong attack_address", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(
+        homechain = 12,
+        {
+          targetChain: 12,
+          actionType: ChainActionType.ATTACK_ADDRESS,
+          attackAddress: collectionAddress,
+          attackArea: Attack_Area.NULL,
+        }
+    )).to.be.false;
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
         homechain = 1,
         {
           targetChain: 12,
@@ -287,6 +297,16 @@ describe("BattleOfChains", function () {
   });
 
   it("areChainActionInputsCorrect should return false for wrong attack_area", async function () {
+    expect(
+      await battleOfChains.areChainActionInputsCorrect(
+        homechain = 41,
+        {
+          targetChain: 41,
+          actionType: ChainActionType.ATTACK_AREA,
+          attackAddress: nullAddress,
+          attackArea: Attack_Area.NORTH,
+        }
+    )).to.be.false;
     expect(
       await battleOfChains.areChainActionInputsCorrect(
         homechain = 1,

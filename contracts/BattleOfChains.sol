@@ -142,12 +142,10 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         bool _isAttackAreaNull = _chainAction.attackArea == AttackArea.NULL;
         bool _isTargetChainNull = _chainAction.targetChain == NULL_CHAIN;
         if  (_chainAction.actionType == ChainActionType.ATTACK_AREA) {
-            if (_chainAction.targetChain == _sourceChain) revert CannotAttackHomeChain();
-            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull;
+            return !_isTargetChainNull && _isAttackAddressNull && !_isAttackAreaNull && (_chainAction.targetChain != _sourceChain);
         }
         if (_chainAction.actionType == ChainActionType.ATTACK_ADDRESS) {
-            if (_chainAction.targetChain == _sourceChain) revert CannotAttackHomeChain();
-            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull;
+            return !_isTargetChainNull && !_isAttackAddressNull && _isAttackAreaNull && (_chainAction.targetChain != _sourceChain);
         }
         return _isTargetChainNull && _isAttackAddressNull && _isAttackAreaNull;
     }
