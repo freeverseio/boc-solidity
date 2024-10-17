@@ -124,7 +124,7 @@ describe("BattleOfChains", function () {
     expect(receipt.logs[0].topics[0]).to.equal(eventAttackTopic0);
   });
 
-  it("attack address emits expected event", async function () {
+  it("attackOnBehalfOf address emits expected event", async function () {
     const tokenIds = [1, 2];
     const user = '0x1111111111111111111100000000000000000000';
     const delegatedUser = addr1.address;
