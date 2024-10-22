@@ -11,6 +11,7 @@ const privateKey =
 
 const POLYGONSCAN_KEY = process.env.POLYGONSCAN_KEY;
 const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY;
+const ARBITRUMSCAN_KEY = process.env.ARBITRUMSCAN_KEY;
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -26,6 +27,22 @@ const config: HardhatUserConfig = {
       chainId: 1337, // Hardhat Network's chain ID
     },
 
+    ethMainnet: {
+      url: 'https://eth.llamarpc.com/',
+      chainId: 1,
+      gas: 'auto',
+      gasPrice: 'auto',
+      accounts: [`0x${privateKey}`],
+    },
+
+    arbitrum: {
+      url: 'https://arbitrum.llamarpc.com',
+      chainId: 42161,
+      gas: 'auto',
+      gasPrice: 'auto',
+      accounts: [`0x${privateKey}`],
+    },
+    
     zombie: {
       url: 'http://127.0.0.1:9999',
       chainId: 667,
@@ -72,9 +89,11 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      mainnet: ETHERSCAN_KEY,
       polygon: POLYGONSCAN_KEY,
       eth: ETHERSCAN_KEY,
-      mainnet: ETHERSCAN_KEY,
+      arbitrum: ARBITRUMSCAN_KEY,
+      arbitrumOne: ARBITRUMSCAN_KEY,
     },
   },
 };
