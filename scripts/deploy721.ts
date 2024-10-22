@@ -13,6 +13,9 @@ async function main() {
   const accounts = await ethers.getSigners();
   console.log("Deploying contracts with the account:", accounts[0].address);
 
+  const balance = await ethers.provider.getBalance(accounts[0].address);
+  console.log("Deployer balance (in wei):", balance.toString());
+
   const ContractFactory = await ethers.getContractFactory(
     "BattleOfChains721",
   );
