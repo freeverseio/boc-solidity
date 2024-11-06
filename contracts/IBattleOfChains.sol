@@ -47,6 +47,7 @@ interface IBattleOfChains {
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
+    error WrongHomebase(address _user, uint32 _chain);
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
 
@@ -185,6 +186,21 @@ interface IBattleOfChains {
         ChainAction calldata _chainAction,
         string calldata _comment
     ) external;
+
+    /**
+     * @notice Attempts to perform an upgrade on the homebase of the msg.sender
+     * @notice Reverts is msg.sender has not joined a chain previously
+     */
+    function upgradeHomebase() external;
+
+    /**
+     * @notice Attempts to perform an upgrade on the homebase of the provided user
+     * @notice Reverts is user has not joined a chain previously
+     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
+     * @notice transaction sender as operator.
+     * @param _user The user on whose behalf the action is taken.
+     */
+    function upgradeHomebaseOnBehalfOf(address _user) external;
 
     /**
      * @notice Attempts to perform an upgrade on an asset owned by the sender
