@@ -75,6 +75,12 @@ describe("BattleOfChains", function () {
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
   });
 
+  it("mercenary cannot be an EOA", async function () {
+    await expect(battleOfChains.registerMercenary(owner.address, homechain = 3, nickname = 'rambo'))
+      .to.be.revertedWithCustomError(battleOfChains, "MercenaryCannotBeEOA")
+      .withArgs(owner.address);
+  });
+
   it("cannot mint a type not previously defined", async function () {
     await expect(battleOfChains.multichainMint(type = 1))
       .to.be.revertedWithCustomError(battleOfChains, "TokenURIForTypeNotDefined")
