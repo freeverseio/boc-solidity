@@ -58,8 +58,20 @@ describe("BattleOfChains", function () {
     expect(receipt.logs[0].topics[0]).to.equal(eventJoinchainTopic0);
   });
 
+  it("register mercenary emits the expected event", async function () {
+    const tx = await battleOfChains.connect(owner).registerMercenary(addr1.address, homechain = 3, nickname = 'rambo');
+    await expect(tx)
+      .to.emit(battleOfChains, "RegisterMercenary")
+      .withArgs(addr1.address, homechain, nickname);
+  });
+
   it("user cannot join null chain", async function () {
     await expect(battleOfChains.joinHomeChain(0, nickname = 'rambo'))
+      .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
+  });
+
+  it("mercenary cannot join null chain", async function () {
+    await expect(battleOfChains.registerMercenary(addr1.address, 0, nickname = 'rambo'))
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
   });
 

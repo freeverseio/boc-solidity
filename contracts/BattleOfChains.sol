@@ -37,6 +37,14 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function registerMercenary(address _mercenaryAddress, uint32 _mercenaryChain, string memory _mercenaryNickname) public {
+        if (_mercenaryChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOf[_mercenaryAddress] != NULL_CHAIN)
+            revert UserAlreadyJoinedChain(_mercenaryAddress, homeChainOf[_mercenaryAddress]);
+        emit RegisterMercenary(_mercenaryAddress, _mercenaryChain, _mercenaryNickname);
+    }
+
+    /// @inheritdoc IBattleOfChains
     function multichainMint(uint256 _type) public returns (uint256 _tokenId) {
         if (!isTypeDefined(_type)) revert TokenURIForTypeNotDefined(_type);
         uint32 _homeChain = homeChainOf[msg.sender];

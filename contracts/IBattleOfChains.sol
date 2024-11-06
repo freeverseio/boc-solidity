@@ -58,6 +58,11 @@ interface IBattleOfChains {
     event JoinedChain(address indexed _user, uint32 indexed _homeChain, string _nickname);
 
     /**
+     * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
+     */
+    event RegisterMercenary(address indexed _mercenaryAddress, uint32 indexed _mercenaryChain, string _mercenaryNickname);
+
+    /**
      * @dev Emitted when a user performs a multichain mint, specifying the home chain to which
      * the user belongs, the type of mint, and the token ID.
      * The tokenId identifies NFTs created on all supported chains.
@@ -114,6 +119,17 @@ interface IBattleOfChains {
      * @param _userNickname The nickname desired by the user within the game.
      */
     function joinHomeChain(uint32 _homeChain, string memory _userNickname) external;
+
+    /**
+     * @notice Registers the existence of a mercenary in the provided mercenary chain. This assignment is permanent.
+     * @dev This TX is disregarded offchain unless the msg.sender has been previously authorized by the mercenary,
+     * in a TX from the mercenary chain. If successfully processed offchain, any posterior attempt
+     * by the mercenary to join a chain will be disregarded offchain. 
+     * @param _mercenaryAddress The address of the mercenary
+     * @param _mercenaryChain The chainId to assign the mercenary to.
+     * @param _mercenaryNickname The nickname desired by the mercenary within the game.
+     */
+    function registerMercenary(address _mercenaryAddress, uint32 _mercenaryChain, string memory _mercenaryNickname) external;
 
     /**
      * @notice Mints NFTs across all supported chains for the specified _type.
