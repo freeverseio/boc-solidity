@@ -135,6 +135,25 @@ describe("BattleOfChains", function () {
       .withArgs(tokenIds, user, owner.address, delegatedUser, targetChain, strategy);
   });
 
+  it("attack to oneself fails", async function () {
+    const tokenIds = [1, 2];
+    const user = owner.address;
+    const tx = battleOfChains.connect(owner)["attack(uint256[],address,uint32,uint32)"](tokenIds, user, targetChain = 3, strategy = 52);
+    await expect(tx)
+      .to.be.revertedWithCustomError(battleOfChains, "SelfAttackForbidden")
+      .withArgs(owner.address);
+  });
+
+  it("attack to oneself via attackOnBehalfOf fails", async function () {
+    const tokenIds = [1, 2];
+    const user = owner.address;
+    const delegatedUser = user;
+    const tx = battleOfChains.connect(owner)["attackOnBehalfOf(uint256[],address,uint32,uint32,address)"](tokenIds, user, targetChain = 3, strategy = 52, delegatedUser)
+    await expect(tx)
+      .to.be.revertedWithCustomError(battleOfChains, "SelfAttackForbidden")
+      .withArgs(owner.address);
+  });
+
   it("areChainActionInputsCorrect should return true for valid defend", async function () {
     expect(
       await battleOfChains.areChainActionInputsCorrect(

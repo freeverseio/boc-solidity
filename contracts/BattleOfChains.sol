@@ -122,6 +122,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         uint32 _targetChain,
         uint32 _strategy
     ) private {
+        if (_attacker == _targetAddress) revert SelfAttackForbidden(_attacker);
         emit Attack(
             tokenIds,
             _targetAddress,

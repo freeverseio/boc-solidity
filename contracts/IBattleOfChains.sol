@@ -50,6 +50,7 @@ interface IBattleOfChains {
     error WrongHomebase(address _user, uint32 _chain);
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
+    error SelfAttackForbidden(address _selfAttacker);
 
     /**
      * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
