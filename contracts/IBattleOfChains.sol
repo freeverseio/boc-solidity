@@ -105,6 +105,7 @@ interface IBattleOfChains {
 
     /**
      * @dev Emitted when a user attempts to upgrade an asset.
+     * @dev An event with tokenId = 0 expresses user's intent to update its homebase
      */
     event Upgrade(
         address indexed _operator,
@@ -211,6 +212,7 @@ interface IBattleOfChains {
     /**
      * @notice Attempts to perform an upgrade on the homebase of the msg.sender
      * @notice Reverts is msg.sender has not joined a chain previously
+     * @dev Emits an upgrade event with tokenId = 0 expressing user's intent to update their homebase
      */
     function upgradeHomebase() external;
 
@@ -219,6 +221,7 @@ interface IBattleOfChains {
      * @notice Reverts is user has not joined a chain previously
      * @notice The effect is completely disregarded offchain unless the user has previously authorized the
      * @notice transaction sender as operator.
+     * @dev Emits an upgrade event with tokenId = 0 expressing user's intent to update their homebase
      * @param _user The user on whose behalf the action is taken.
      */
     function upgradeHomebaseOnBehalfOf(address _user) external;
