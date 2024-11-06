@@ -500,5 +500,29 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address, addr1.address, chain, tokenId);
   });
 
-});
+  it("upgradeHomebase emits expected event", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgradeHomebase())
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, owner.address, homechain, tokenId = 0);
+  });
 
+  it("upgradeHomebaseOnBehalfOf emits expected event", async function () {
+    await battleOfChains.connect(addr1).joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgradeHomebaseOnBehalfOf(addr1.address))
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, addr1.address, homechain, tokenId = 0);
+  });
+
+  it("upgradeHomebase fails if user has not joined", async function () {
+    await expect(battleOfChains.upgradeHomebase())
+      .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
+      .withArgs(owner.address);
+  });
+
+  it("upgradeHomebaseOnBehalfOf fails if user has not joined", async function () {
+    await expect(battleOfChains.upgradeHomebaseOnBehalfOf(addr1.address))
+      .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
+      .withArgs(addr1.address);
+  });
+});
