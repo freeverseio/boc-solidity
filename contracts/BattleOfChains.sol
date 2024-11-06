@@ -19,6 +19,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
     uint32 private constant NULL_CHAIN = 0;
+    uint256 private constant HOMEBASE_TOKEN_ID = 0;
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOf;
 
@@ -33,6 +34,15 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
         homeChainOf[msg.sender] = _homeChain;
         emit JoinedChain(msg.sender, _homeChain, _userNickname);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function registerMercenary(address _mercenaryAddress, uint32 _mercenaryChain, string memory _mercenaryNickname) public {
+        if (_mercenaryChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOf[_mercenaryAddress] != NULL_CHAIN)
+            revert UserAlreadyJoinedChain(_mercenaryAddress, homeChainOf[_mercenaryAddress]);
+        if (msg.sender == _mercenaryAddress) revert MercenaryCannotBeEOA(_mercenaryAddress);
+        emit RegisterMercenary(_mercenaryAddress, _mercenaryChain, _mercenaryNickname);
     }
 
     /// @inheritdoc IBattleOfChains
@@ -85,12 +95,32 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function upgradeHomebase() public {
+        uint32 _homeChain = homeChainOf[msg.sender];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
+        _upgrade(msg.sender, _homeChain, 0);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function upgradeHomebaseOnBehalfOf(address _user) public {
+        uint32 _homeChain = homeChainOf[_user];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
+        _upgrade(_user, _homeChain, 0);
+    }
+
+    /// @inheritdoc IBattleOfChains
     function upgrade(uint32 _chain, uint256 _tokenId) public {
+        if (_tokenId == HOMEBASE_TOKEN_ID) {
+            if (_chain == 0 || homeChainOf[msg.sender] != _chain) revert WrongHomebase(msg.sender, _chain);
+        }
         _upgrade(msg.sender, _chain, _tokenId);
     }
 
     /// @inheritdoc IBattleOfChains
     function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) public {
+        if (_tokenId == HOMEBASE_TOKEN_ID) {
+            if (_chain == 0 || homeChainOf[_user] != _chain) revert WrongHomebase(_user, _chain);
+        }
         _upgrade(_user, _chain, _tokenId);
     }
 
@@ -101,6 +131,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         uint32 _targetChain,
         uint32 _strategy
     ) private {
+        if (_attacker == _targetAddress) revert SelfAttackForbidden(_attacker);
         emit Attack(
             tokenIds,
             _targetAddress,

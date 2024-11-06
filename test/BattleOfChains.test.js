@@ -58,9 +58,27 @@ describe("BattleOfChains", function () {
     expect(receipt.logs[0].topics[0]).to.equal(eventJoinchainTopic0);
   });
 
+  it("register mercenary emits the expected event", async function () {
+    const tx = await battleOfChains.connect(owner).registerMercenary(addr1.address, homechain = 3, nickname = 'rambo');
+    await expect(tx)
+      .to.emit(battleOfChains, "RegisterMercenary")
+      .withArgs(addr1.address, homechain, nickname);
+  });
+
   it("user cannot join null chain", async function () {
     await expect(battleOfChains.joinHomeChain(0, nickname = 'rambo'))
       .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
+  });
+
+  it("mercenary cannot join null chain", async function () {
+    await expect(battleOfChains.registerMercenary(addr1.address, 0, nickname = 'rambo'))
+      .to.be.revertedWithCustomError(battleOfChains, "HomeChainMustBeGreaterThanZero");
+  });
+
+  it("mercenary cannot be an EOA", async function () {
+    await expect(battleOfChains.registerMercenary(owner.address, homechain = 3, nickname = 'rambo'))
+      .to.be.revertedWithCustomError(battleOfChains, "MercenaryCannotBeEOA")
+      .withArgs(owner.address);
   });
 
   it("cannot mint a type not previously defined", async function () {
@@ -133,6 +151,25 @@ describe("BattleOfChains", function () {
     )
       .to.emit(battleOfChains, "Attack")
       .withArgs(tokenIds, user, owner.address, delegatedUser, targetChain, strategy);
+  });
+
+  it("attack to oneself fails", async function () {
+    const tokenIds = [1, 2];
+    const user = owner.address;
+    const tx = battleOfChains.connect(owner)["attack(uint256[],address,uint32,uint32)"](tokenIds, user, targetChain = 3, strategy = 52);
+    await expect(tx)
+      .to.be.revertedWithCustomError(battleOfChains, "SelfAttackForbidden")
+      .withArgs(owner.address);
+  });
+
+  it("attack to oneself via attackOnBehalfOf fails", async function () {
+    const tokenIds = [1, 2];
+    const user = owner.address;
+    const delegatedUser = user;
+    const tx = battleOfChains.connect(owner)["attackOnBehalfOf(uint256[],address,uint32,uint32,address)"](tokenIds, user, targetChain = 3, strategy = 52, delegatedUser)
+    await expect(tx)
+      .to.be.revertedWithCustomError(battleOfChains, "SelfAttackForbidden")
+      .withArgs(owner.address);
   });
 
   it("areChainActionInputsCorrect should return true for valid defend", async function () {
@@ -500,5 +537,47 @@ describe("BattleOfChains", function () {
       .withArgs(owner.address, addr1.address, chain, tokenId);
   });
 
-});
+  it("upgradeHomebase emits expected event", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgradeHomebase())
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, owner.address, homechain, tokenId = 0);
+  });
 
+  it("upgradeHomebaseOnBehalfOf emits expected event", async function () {
+    await battleOfChains.connect(addr1).joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgradeHomebaseOnBehalfOf(addr1.address))
+      .to.emit(battleOfChains, "Upgrade")
+      .withArgs(owner.address, addr1.address, homechain, tokenId = 0);
+  });
+
+  it("upgradeHomebase fails if user has not joined", async function () {
+    await expect(battleOfChains.upgradeHomebase())
+      .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
+      .withArgs(owner.address);
+  });
+
+  it("upgradeHomebaseOnBehalfOf fails if user has not joined", async function () {
+    await expect(battleOfChains.upgradeHomebaseOnBehalfOf(addr1.address))
+      .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
+      .withArgs(addr1.address);
+  });
+
+  it("direct upgrade of wrong home chain fails if has not joined", async function () {
+    await expect(battleOfChains.upgrade(chain = 1, token = 0))
+      .to.be.revertedWithCustomError(battleOfChains, "WrongHomebase")
+      .withArgs(owner.address, chain);
+  });
+
+  it("direct upgrade of wrong home chain fails if has joined another chain", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgrade(chain = 1, token = 0))
+      .to.be.revertedWithCustomError(battleOfChains, "WrongHomebase")
+      .withArgs(owner.address, chain);
+  });
+
+  it("direct upgrade of correct home chain works", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgrade(homechain, token = 0)).not.to.be.reverted;
+  });
+});
