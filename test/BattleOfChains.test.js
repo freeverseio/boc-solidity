@@ -525,4 +525,22 @@ describe("BattleOfChains", function () {
       .to.be.revertedWithCustomError(battleOfChains, "UserHasNotJoinedChainYet")
       .withArgs(addr1.address);
   });
+
+  it("direct upgrade of wrong home chain fails if has not joined", async function () {
+    await expect(battleOfChains.upgrade(chain = 1, token = 0))
+      .to.be.revertedWithCustomError(battleOfChains, "WrongHomebase")
+      .withArgs(owner.address, chain);
+  });
+
+  it("direct upgrade of wrong home chain fails if has joined another chain", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgrade(chain = 1, token = 0))
+      .to.be.revertedWithCustomError(battleOfChains, "WrongHomebase")
+      .withArgs(owner.address, chain);
+  });
+
+  it("direct upgrade of correct home chain works", async function () {
+    await battleOfChains.joinHomeChain(homechain = 3, nickname = 'rambo');
+    await expect(battleOfChains.upgrade(homechain, token = 0)).not.to.be.reverted;
+  });
 });
