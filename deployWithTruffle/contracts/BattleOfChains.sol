@@ -187,13 +187,21 @@ interface IBattleOfChains {
     error HomeChainMustBeGreaterThanZero();
     error UserAlreadyJoinedChain(address _user, uint32 _chain);
     error UserHasNotJoinedChainYet(address _user);
+    error WrongHomebase(address _user, uint32 _chain);
     error IncorrectAttackInput();
     error AttackAddressCannotBeEmpty();
+    error SelfAttackForbidden(address _selfAttacker);
+    error MercenaryCannotBeEOA(address _mercenary);
 
     /**
      * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
      */
     event JoinedChain(address indexed _user, uint32 indexed _homeChain, string _nickname);
+
+    /**
+     * @dev Emitted when an operator attemps to register a user as mercenary, specifying the mercenary chain ID, address, and nickname.
+     */
+    event RegisterMercenary(address _operator, address indexed _mercenaryAddress, uint32 indexed _mercenaryChain, string _mercenaryNickname);
 
     /**
      * @dev Emitted when a user performs a multichain mint, specifying the home chain to which
@@ -237,6 +245,7 @@ interface IBattleOfChains {
 
     /**
      * @dev Emitted when a user attempts to upgrade an asset.
+     * @dev An event with tokenId = 0 expresses user's intent to update its homebase
      */
     event Upgrade(
         address indexed _operator,
@@ -252,6 +261,19 @@ interface IBattleOfChains {
      * @param _userNickname The nickname desired by the user within the game.
      */
     function joinHomeChain(uint32 _homeChain, string memory _userNickname) external;
+
+    /**
+     * @notice Registers the existence of a mercenary in the provided mercenary chain. This assignment is permanent.
+     *  The Mercenary role is intended for DAOs that operate in one single chain, and hence, don't correspond to EOAs.
+     *  Mercenaries cannot mint, nor produce treasury, but they can attack, steal funds, and share them as they wish. 
+     * @dev This TX is disregarded offchain unless the msg.sender is an authorized operator on behalf of the mercenary.
+     * If successfully processed offchain, any posterior attempt by the mercenary to join a chain will be disregarded offchain. 
+     * @dev Reverts if msg.sender == _mercenaryAddress, to help prevent cases where mercenaries are EOAs
+     * @param _mercenaryAddress The address of the mercenary
+     * @param _mercenaryChain The chainId to assign the mercenary to.
+     * @param _mercenaryNickname The nickname desired by the mercenary within the game.
+     */
+    function registerMercenary(address _mercenaryAddress, uint32 _mercenaryChain, string memory _mercenaryNickname) external;
 
     /**
      * @notice Mints NFTs across all supported chains for the specified _type.
@@ -325,6 +347,23 @@ interface IBattleOfChains {
         ChainAction calldata _chainAction,
         string calldata _comment
     ) external;
+
+    /**
+     * @notice Attempts to perform an upgrade on the homebase of the msg.sender
+     * @notice Reverts is msg.sender has not joined a chain previously
+     * @dev Emits an upgrade event with tokenId = 0 expressing user's intent to update their homebase
+     */
+    function upgradeHomebase() external;
+
+    /**
+     * @notice Attempts to perform an upgrade on the homebase of the provided user
+     * @notice Reverts is user has not joined a chain previously
+     * @notice The effect is completely disregarded offchain unless the user has previously authorized the
+     * @notice transaction sender as operator.
+     * @dev Emits an upgrade event with tokenId = 0 expressing user's intent to update their homebase
+     * @param _user The user on whose behalf the action is taken.
+     */
+    function upgradeHomebaseOnBehalfOf(address _user) external;
 
     /**
      * @notice Attempts to perform an upgrade on an asset owned by the sender
@@ -719,6 +758,7 @@ pragma solidity >=0.8.20;
 contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContractsManager {
 
     uint32 private constant NULL_CHAIN = 0;
+    uint256 private constant HOMEBASE_TOKEN_ID = 0;
     IEvolutionCollection public immutable collectionContract;
     mapping(address user => uint32 homeChain) public homeChainOf;
 
@@ -733,6 +773,15 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
             revert UserAlreadyJoinedChain(msg.sender, homeChainOf[msg.sender]);
         homeChainOf[msg.sender] = _homeChain;
         emit JoinedChain(msg.sender, _homeChain, _userNickname);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function registerMercenary(address _mercenaryAddress, uint32 _mercenaryChain, string memory _mercenaryNickname) public {
+        if (_mercenaryChain == NULL_CHAIN) revert HomeChainMustBeGreaterThanZero();
+        if (homeChainOf[_mercenaryAddress] != NULL_CHAIN)
+            revert UserAlreadyJoinedChain(_mercenaryAddress, homeChainOf[_mercenaryAddress]);
+        if (msg.sender == _mercenaryAddress) revert MercenaryCannotBeEOA(_mercenaryAddress);
+        emit RegisterMercenary(msg.sender, _mercenaryAddress, _mercenaryChain, _mercenaryNickname);
     }
 
     /// @inheritdoc IBattleOfChains
@@ -785,12 +834,32 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
     }
 
     /// @inheritdoc IBattleOfChains
+    function upgradeHomebase() public {
+        uint32 _homeChain = homeChainOf[msg.sender];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(msg.sender);
+        _upgrade(msg.sender, _homeChain, 0);
+    }
+
+    /// @inheritdoc IBattleOfChains
+    function upgradeHomebaseOnBehalfOf(address _user) public {
+        uint32 _homeChain = homeChainOf[_user];
+        if (_homeChain == NULL_CHAIN) revert UserHasNotJoinedChainYet(_user);
+        _upgrade(_user, _homeChain, 0);
+    }
+
+    /// @inheritdoc IBattleOfChains
     function upgrade(uint32 _chain, uint256 _tokenId) public {
+        if (_tokenId == HOMEBASE_TOKEN_ID) {
+            if (_chain == 0 || homeChainOf[msg.sender] != _chain) revert WrongHomebase(msg.sender, _chain);
+        }
         _upgrade(msg.sender, _chain, _tokenId);
     }
 
     /// @inheritdoc IBattleOfChains
     function upgradeOnBehalfOf(address _user, uint32 _chain, uint256 _tokenId) public {
+        if (_tokenId == HOMEBASE_TOKEN_ID) {
+            if (_chain == 0 || homeChainOf[_user] != _chain) revert WrongHomebase(_user, _chain);
+        }
         _upgrade(_user, _chain, _tokenId);
     }
 
@@ -801,6 +870,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         uint32 _targetChain,
         uint32 _strategy
     ) private {
+        if (_attacker == _targetAddress) revert SelfAttackForbidden(_attacker);
         emit Attack(
             tokenIds,
             _targetAddress,

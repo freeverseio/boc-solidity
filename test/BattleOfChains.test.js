@@ -62,7 +62,7 @@ describe("BattleOfChains", function () {
     const tx = await battleOfChains.connect(owner).registerMercenary(addr1.address, homechain = 3, nickname = 'rambo');
     await expect(tx)
       .to.emit(battleOfChains, "RegisterMercenary")
-      .withArgs(addr1.address, homechain, nickname);
+      .withArgs(owner.address, addr1.address, homechain, nickname);
   });
 
   it("user cannot join null chain", async function () {
@@ -183,6 +183,12 @@ describe("BattleOfChains", function () {
           attackArea: Attack_Area.NULL,
         }
     )).to.be.true;
+    console.log(JSON.stringify({
+      targetChain: 0,
+      actionType: ChainActionType.DEFEND,
+      attackAddress: nullAddress,
+      attackArea: Attack_Area.NULL,
+    }))
   });
 
   it("areChainActionInputsCorrect should return true for valid improve", async function () {

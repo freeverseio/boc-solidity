@@ -59,9 +59,9 @@ interface IBattleOfChains {
     event JoinedChain(address indexed _user, uint32 indexed _homeChain, string _nickname);
 
     /**
-     * @dev Emitted when a user joins a chain, specifying the home chain ID and the user's nickname.
+     * @dev Emitted when an operator attemps to register a user as mercenary, specifying the mercenary chain ID, address, and nickname.
      */
-    event RegisterMercenary(address indexed _mercenaryAddress, uint32 indexed _mercenaryChain, string _mercenaryNickname);
+    event RegisterMercenary(address _operator, address indexed _mercenaryAddress, uint32 indexed _mercenaryChain, string _mercenaryNickname);
 
     /**
      * @dev Emitted when a user performs a multichain mint, specifying the home chain to which
@@ -126,9 +126,8 @@ interface IBattleOfChains {
      * @notice Registers the existence of a mercenary in the provided mercenary chain. This assignment is permanent.
      *  The Mercenary role is intended for DAOs that operate in one single chain, and hence, don't correspond to EOAs.
      *  Mercenaries cannot mint, nor produce treasury, but they can attack, steal funds, and share them as they wish. 
-     * @dev This TX is disregarded offchain unless the msg.sender has been previously authorized by the mercenary,
-     * in a TX from the mercenary chain. If successfully processed offchain, any posterior attempt
-     * by the mercenary to join a chain will be disregarded offchain. 
+     * @dev This TX is disregarded offchain unless the msg.sender is an authorized operator on behalf of the mercenary.
+     * If successfully processed offchain, any posterior attempt by the mercenary to join a chain will be disregarded offchain. 
      * @dev Reverts if msg.sender == _mercenaryAddress, to help prevent cases where mercenaries are EOAs
      * @param _mercenaryAddress The address of the mercenary
      * @param _mercenaryChain The chainId to assign the mercenary to.

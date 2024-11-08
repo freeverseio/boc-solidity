@@ -42,7 +42,7 @@ contract BattleOfChains is Ownable, IBattleOfChains, URIManager, SupportedContra
         if (homeChainOf[_mercenaryAddress] != NULL_CHAIN)
             revert UserAlreadyJoinedChain(_mercenaryAddress, homeChainOf[_mercenaryAddress]);
         if (msg.sender == _mercenaryAddress) revert MercenaryCannotBeEOA(_mercenaryAddress);
-        emit RegisterMercenary(_mercenaryAddress, _mercenaryChain, _mercenaryNickname);
+        emit RegisterMercenary(msg.sender, _mercenaryAddress, _mercenaryChain, _mercenaryNickname);
     }
 
     /// @inheritdoc IBattleOfChains
