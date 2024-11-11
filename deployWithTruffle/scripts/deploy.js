@@ -26,7 +26,7 @@ module.exports = async (callback) => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     console.log('...waiting 2s...done');
     const battle = await BattleOfChains.new(newCollectionAddress);
-    console.log('...DONE. Deploed at ', battle.address);
+    console.log('...DONE. Deployed at ', battle.address);
     
     console.log('Setting precompile owner to BattleOfChains contract...');
     console.log('...waiting 2s');
