@@ -183,12 +183,6 @@ describe("BattleOfChains", function () {
           attackArea: Attack_Area.NULL,
         }
     )).to.be.true;
-    console.log(JSON.stringify({
-      targetChain: 0,
-      actionType: ChainActionType.DEFEND,
-      attackAddress: nullAddress,
-      attackArea: Attack_Area.NULL,
-    }))
   });
 
   it("areChainActionInputsCorrect should return true for valid improve", async function () {
