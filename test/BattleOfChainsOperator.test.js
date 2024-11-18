@@ -41,21 +41,31 @@ describe("BattleOfChainsOperator", function () {
     .withArgs(owner.address, 1, [[addr1.address, 10],[owner.address, 20]]);
   });
 
-  it("should revert SendGameTreasury when one inputs exceed 100", async function () {
+  it("should revert sendGameTreasuryPercentage when one inputs exceed 100", async function () {
     const sendTXs = [
       { recipient: addr1.address, amount: 0 },
-      { recipient: owner.address, amount: 1001 }
+      { recipient: owner.address, amount: 10001 }
     ];
 
     await expect(battleOfChains.sendGameTreasuryPercentage(sendTXs))
       .to.be.revertedWithCustomError(battleOfChains, "PercentageAbove100")
-      .withArgs(1001);
+      .withArgs(10001);
   });
 
   it("should accept SendGameTreasury one inputs equal to 100", async function () {
     const sendTXs = [
       { recipient: addr1.address, amount: 0 },
-      { recipient: owner.address, amount: 100 }
+      { recipient: owner.address, amount: 10000 }
+    ];
+
+    await expect(battleOfChains.sendGameTreasuryPercentage(sendTXs))
+      .not.to.be.reverted;
+  });
+
+  it("should accept SendGameTreasury inputs sum to 100", async function () {
+    const sendTXs = [
+      { recipient: addr1.address, amount: 9999 },
+      { recipient: owner.address, amount: 1 }
     ];
 
     await expect(battleOfChains.sendGameTreasuryPercentage(sendTXs))
@@ -64,13 +74,13 @@ describe("BattleOfChainsOperator", function () {
 
   it("should revert SendGameTreasury when sum of inputs exceed 100", async function () {
     const sendTXs = [
-      { recipient: addr1.address, amount: 999 },
+      { recipient: addr1.address, amount: 9999 },
       { recipient: owner.address, amount: 2 }
     ];
 
     await expect(battleOfChains.sendGameTreasuryPercentage(sendTXs))
       .to.be.revertedWithCustomError(battleOfChains, "PercentageAbove100")
-      .withArgs(1001);
+      .withArgs(10001);
   });
 
   it("should accept SendGameTreasury with one amount as the largest possible uint256", async function () {
