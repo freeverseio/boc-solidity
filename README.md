@@ -12,7 +12,7 @@ To install, compile, and test:
 npm ci
 npx hardhat compile
 npx hardhat test
-
+```
 
 ## Deploying the Contract
 
