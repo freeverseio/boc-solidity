@@ -40,7 +40,7 @@ Hardhat has a flattener plugin that creates a single Solidity file with all impo
 npx hardhat flatten ./contracts/BattleOfChains.sol > flattened.sol
 ```
 This file can be uploaded to explorers, alongside the correct Solidity compiler parameters in the [hardhat config file](./hardhat.config.ts), e.g.:
-```json
+```javascript
 solidity: {
     version: "0.8.28",
     settings: {
