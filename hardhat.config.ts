@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import "@nomicfoundation/hardhat-verify";
+import "@nomicfoundation/hardhat-ignition-ethers";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,10 +16,12 @@ const ARBITRUMSCAN_KEY = process.env.ARBITRUMSCAN_KEY;
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: '0.8.26',
+    version: "0.8.28",
     settings: {
+      evmVersion: "paris",
       optimizer: {
         enabled: true,
+        runs: 200
       },
     },
   },
@@ -75,7 +78,7 @@ const config: HardhatUserConfig = {
       accounts: [`0x${privateKey}`],
     },
 
-    laos: {
+    'laos-chain': {
       url: 'https://rpc.laos.laosfoundation.io',
       chainId: 6283,
       gas: 'auto',
@@ -94,7 +97,18 @@ const config: HardhatUserConfig = {
       eth: ETHERSCAN_KEY,
       arbitrum: ARBITRUMSCAN_KEY,
       arbitrumOne: ARBITRUMSCAN_KEY,
+      'laos-chain': 'empty',
     },
+    customChains: [
+      {
+        network: "laos-chain",
+        chainId: 6283,
+        urls: {
+          apiURL: "https://blockscout-be.laos.laosfoundation.io/api",
+          browserURL: "https://blockscout.laos.laosfoundation.io:3000"
+        }
+      }
+    ]
   },
 };
 

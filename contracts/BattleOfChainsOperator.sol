@@ -32,7 +32,7 @@ contract BattleOfChainsOperator is IBattleOfChainsOperator {
         for (uint256 i = 0; i < _sendTXs.length; i++) {
             totalPercentage += _sendTXs[i].amount;
         }
-        if (totalPercentage > 1000) revert PercentageAbove100(totalPercentage);
+        if (totalPercentage > 10000) revert PercentageAbove100(totalPercentage);
         emit SendGameTreasury(msg.sender, GameTreasurySendMethod.PERCENTAGE_BPS, _sendTXs);
     }
 }
